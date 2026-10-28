@@ -503,25 +503,53 @@ export function DataTable<T>({
       {limit > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t px-3 py-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2">
+            <span className="flex items-center gap-2">
               Rows
-              <select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value))
-                  setPage(0)
-                }}
-                className="h-8 rounded-lg border border-input bg-card px-2 text-foreground dark:scheme-dark"
+              <Popover
+                side="top"
+                className="min-w-24"
+                trigger={({ open, toggle }) => (
+                  <button
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded={open}
+                    aria-label={`Rows per page: ${limit}`}
+                    onClick={toggle}
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-card px-2.5 font-medium text-foreground tabular-nums shadow-(--shadow-button) hover:bg-muted"
+                  >
+                    {limit}
+                    <span aria-hidden className="text-[10px] text-muted-foreground">
+                      ▾
+                    </span>
+                  </button>
+                )}
               >
-                {[...new Set([...pageSizeOptions, pageSize ?? limit])]
-                  .sort((x, y) => x - y)
-                  .map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-              </select>
-            </label>
+                {(close) => (
+                  <ul role="listbox" aria-label="Rows per page">
+                    {[...new Set([...pageSizeOptions, pageSize ?? limit])]
+                      .sort((x, y) => x - y)
+                      .map((n) => (
+                        <li key={n}>
+                          <button
+                            type="button"
+                            role="option"
+                            aria-selected={n === limit}
+                            onClick={() => {
+                              setLimit(n)
+                              setPage(0)
+                              close()
+                            }}
+                            className="flex h-8 w-full items-center justify-between gap-3 rounded-lg px-2 text-sm text-foreground tabular-nums hover:bg-muted"
+                          >
+                            {n}
+                            {n === limit && <span aria-hidden>✓</span>}
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </Popover>
+            </span>
             {!loading && visible.length > 0 && (
               <span className="tabular-nums">
                 {current * limit + 1}–{Math.min((current + 1) * limit, visible.length)} of{' '}

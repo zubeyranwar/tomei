@@ -7,11 +7,18 @@ import { cn } from '@/lib/utils'
 type PopoverProps = {
   trigger: (props: { open: boolean; toggle: () => void }) => React.ReactNode
   align?: 'start' | 'end'
+  side?: 'top' | 'bottom'
   className?: string
-  children: React.ReactNode
+  children: React.ReactNode | ((close: () => void) => React.ReactNode)
 }
 
-export function Popover({ trigger, align = 'start', className, children }: PopoverProps) {
+export function Popover({
+  trigger,
+  align = 'start',
+  side = 'bottom',
+  className,
+  children,
+}: PopoverProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -35,12 +42,13 @@ export function Popover({ trigger, align = 'start', className, children }: Popov
       {open && (
         <div
           className={cn(
-            'absolute top-full z-50 mt-1.5 min-w-48 rounded-xl bg-popover p-1.5 text-popover-foreground shadow-(--shadow-overlay)',
+            'absolute z-50 min-w-48 rounded-xl bg-popover p-1.5 text-popover-foreground shadow-(--shadow-overlay)',
+            side === 'top' ? 'bottom-full mb-1.5' : 'top-full mt-1.5',
             align === 'end' ? 'right-0' : 'left-0',
             className,
           )}
         >
-          {children}
+          {typeof children === 'function' ? children(() => setOpen(false)) : children}
         </div>
       )}
     </div>

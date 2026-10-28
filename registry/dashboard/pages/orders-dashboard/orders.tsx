@@ -4,6 +4,7 @@ import type { Column, Filter, View } from '@/registry/dashboard/components/data-
 export type Order = {
   id: string
   placed: number
+  daysAgo: number
   date: string
   customer: string
   total: number
@@ -24,13 +25,16 @@ const names = [
 const payments: Order['payment'][] = ['Paid', 'Paid', 'Payment pending', 'Paid', 'Refunded']
 const fulfillments: Order['fulfillment'][] = ['Unfulfilled', 'Fulfilled', 'On hold', 'Unfulfilled']
 
+const daysAgo = (i: number) => (i < 4 ? 0 : (i - 3) * 3)
+
 export const orders: Order[] = Array.from({ length: 40 }, (_, i) => ({
   id: `#${2050 - i}`,
   placed: 16 - i,
+  daysAgo: daysAgo(i),
   date:
     i < 4
       ? `Today at ${9 - i * 2}:${String(55 - i * 7).padStart(2, '0')} a.m.`
-      : `${i - 3} ${i === 4 ? 'day' : 'days'} ago`,
+      : `${daysAgo(i)} days ago`,
   customer: names[i % names.length],
   total: [98.99, 396.84, 54.2, 1210.5, 18][i % 5],
   payment: payments[i % payments.length],

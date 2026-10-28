@@ -20,7 +20,7 @@ import {
 } from './dates'
 
 export type { DatePreset, DateRange }
-export { defaultPresets }
+export { addDays, defaultPresets, startOfDay }
 
 type DateRangePickerProps = {
   value?: DateRange
@@ -255,22 +255,24 @@ export function DateRangePicker({
           </ul>
 
           <div className="flex flex-col gap-4 p-4">
-            <select
-              aria-label="Date range"
-              value={activePreset ?? ''}
-              onChange={(e) => {
-                const preset = presets.find((p) => p.label === e.target.value)
-                if (preset) choosePreset(preset)
-              }}
-              className="h-8 rounded-lg border border-input bg-card px-2 text-sm md:hidden"
-            >
-              <option value="" disabled>
-                Custom
-              </option>
-              {presets.map((p) => (
-                <option key={p.label}>{p.label}</option>
+            <div className="flex flex-wrap gap-1.5 md:hidden">
+              {presets.map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  aria-pressed={activePreset === preset.label}
+                  onClick={() => choosePreset(preset)}
+                  className={cn(
+                    'h-7 rounded-full border px-3 text-xs font-medium',
+                    activePreset === preset.label
+                      ? 'border-transparent bg-primary text-primary-foreground'
+                      : 'hover:bg-muted',
+                  )}
+                >
+                  {preset.label}
+                </button>
               ))}
-            </select>
+            </div>
 
             <div className="flex items-center gap-2">
               {(['start', 'end'] as const).map((key, i) => (

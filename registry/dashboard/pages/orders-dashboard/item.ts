@@ -6,6 +6,13 @@ export default defineItem({
     'An orders screen: sidebar with nested links, page actions, stat cards and an index table with views, search, filter chips, sorting and bulk selection.',
   categories: ['tables', 'layout'],
   dependencies: ['lucide-react'],
-  registryDependencies: ['sidebar', 'input', 'button', 'badge', 'data-table', 'stat-card'],
+  registryDependencies: [
+    'sidebar',
+    'button',
+    'badge',
+    'data-table',
+    'stat-card',
+    'date-range-picker',
+  ],
   date: '2026-10-28',
 })
