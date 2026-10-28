@@ -1,0 +1,169 @@
+@import 'tailwindcss';
+@import './fonts.css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* shadcn semantic tokens — registry items style against these so they adapt to
+ * whatever theme the consumer project defines. */
+:root {
+  --radius: 0.75rem;
+  --background: #e8e8e3;
+  --foreground: #080807;
+  --card: #f3f3ef;
+  --card-foreground: #080807;
+  --popover: #f1f1ed;
+  --popover-foreground: #080807;
+  --primary: #080807;
+  --primary-foreground: #e8e8e3;
+  --secondary: #d1d1c7;
+  --secondary-foreground: #080807;
+  --muted: #d1d1c7;
+  --muted-foreground: #6b645c;
+  --accent: #d1d1c7;
+  --accent-foreground: #080807;
+  --destructive: #9e1f1f;
+  --border: #bfbfb1;
+  --input: #bfbfb1;
+  --ring: #8c8c73;
+}
+
+.dark {
+  --background: #0c0c0b;
+  --foreground: #e8e8e3;
+  --card: #1a1917;
+  --card-foreground: #e8e8e3;
+  --popover: #1a1917;
+  --popover-foreground: #e8e8e3;
+  --primary: #e8e8e3;
+  --primary-foreground: #080807;
+  --secondary: #262422;
+  --secondary-foreground: #e8e8e3;
+  --muted: #262422;
+  --muted-foreground: #a29e9a;
+  --accent: #262422;
+  --accent-foreground: #e8e8e3;
+  --destructive: #ad1a1a;
+  --border: #2d2b28;
+  --input: #2d2b28;
+  --ring: #6b645c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* Site-only tokens (zubeyr.dev). Registry items must not use these. */
+@theme {
+  --font-sans: 'PP Neue Montreal', 'PP Neue Montreal Fallback', system-ui, sans-serif;
+  --font-text: 'PP Neue Montreal Text', 'PP Neue Montreal Fallback', system-ui, sans-serif;
+  --font-mono: 'PP Neue Montreal Mono', 'PP Neue Montreal Mono Fallback', ui-monospace, monospace;
+
+  --color-sand-200: #e8e8e3;
+  --color-sand-400: #d1d1c7;
+  --color-sand-500: #bfbfb1;
+  --color-sand-600: #8c8c73;
+  --color-ink-50: #a29e9a;
+  --color-ink-100: #6b645c;
+  --color-ink-200: #524d47;
+  --color-ink-300: #393632;
+  --color-ink-400: #080807;
+  --color-signal: #ad1a1a;
+
+  --text-mono: clamp(0.7rem, 0.6571rem + 0.1786vi, 0.85rem);
+  --text-heading-1: clamp(3.5rem, 2.3571rem + 5.5143vi, 10.5rem);
+  --text-heading-2: clamp(1.9531rem, 1.496rem + 2.2854vi, 3.5529rem);
+  --text-heading-3: clamp(1.5625rem, 1.2474rem + 1.5755vi, 2.6653rem);
+  --text-heading-4: clamp(1.25rem, 1.0359rem + 1.0707vi, 1.9995rem);
+
+  --tracking-heading: -0.025em;
+  --tracking-mono: -0.035em;
+
+  --spacing-fluid: clamp(1rem, 0.8571rem + 1.0143vi, 3.5rem);
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0, 1);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    letter-spacing: var(--tracking-heading);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 100rem;
+  padding-inline: var(--spacing-fluid);
+}
+
+.shiki {
+  counter-reset: line;
+  background: transparent !important;
+}
+
+.shiki .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: var(--muted-foreground);
+  opacity: 0.6;
+}
+
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark) !important;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
