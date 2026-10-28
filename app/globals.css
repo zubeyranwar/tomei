@@ -25,6 +25,25 @@
   --border: #bfbfb1;
   --input: #bfbfb1;
   --ring: #8c8c73;
+  --sidebar: #dfdfd8;
+  --sidebar-foreground: #524d47;
+  --sidebar-primary: #f3f3ef;
+  --sidebar-primary-foreground: #080807;
+  --sidebar-accent: #d1d1c7;
+  --sidebar-accent-foreground: #080807;
+  --sidebar-border: #c9c9bd;
+  --sidebar-ring: #8c8c73;
+  --chart-1: #1f9ad6;
+  --chart-2: #8fd3f2;
+  --chart-3: #6b4eff;
+  --chart-4: #22a68f;
+  --chart-5: #e0559f;
+  --shadow-button:
+    0 1px 2px rgb(0 0 0 / 0.05), 0 0 0 1px rgb(0 0 0 / 0.1), inset 0 1px 0 rgb(255 255 255 / 0.8);
+  --shadow-button-primary:
+    0 1px 2px rgb(0 0 0 / 0.2), 0 0 0 1px var(--primary), inset 0 1px 0 rgb(255 255 255 / 0.14);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 0 0 1px rgb(0 0 0 / 0.07);
+  --shadow-overlay: 0 16px 40px rgb(0 0 0 / 0.12), 0 0 0 1px rgb(0 0 0 / 0.08);
 }
 
 .dark {
@@ -46,6 +65,88 @@
   --border: #2d2b28;
   --input: #2d2b28;
   --ring: #6b645c;
+  --sidebar: #121211;
+  --sidebar-foreground: #a29e9a;
+  --sidebar-primary: #262422;
+  --sidebar-primary-foreground: #e8e8e3;
+  --sidebar-accent: #1a1917;
+  --sidebar-accent-foreground: #e8e8e3;
+  --sidebar-border: #2d2b28;
+  --sidebar-ring: #6b645c;
+  --chart-1: #38b2ea;
+  --chart-2: #1d5f80;
+  --chart-3: #8a74ff;
+  --chart-4: #2fc4a8;
+  --chart-5: #f06bb2;
+  --shadow-button:
+    0 0 0 1px rgb(0 0 0 / 0.4), inset 0 1px 0 rgb(255 255 255 / 0.1),
+    inset 0 0 0 1px rgb(255 255 255 / 0.06);
+  --shadow-button-primary:
+    0 1px 2px rgb(0 0 0 / 0.32), 0 0 0 1px rgb(255 255 255 / 0.9),
+    inset 0 -2px 4px rgb(0 0 0 / 0.06);
+  --shadow-card:
+    0 4px 4px rgb(42 42 42 / 0.32), 0 0 0 1px #0e0e0e, inset 0 1px 0 rgb(255 255 255 / 0.08),
+    inset 0 0 0 1px rgb(255 255 255 / 0.08);
+  --shadow-overlay: 0 16px 40px rgb(0 0 0 / 0.5), 0 0 0 1px #0e0e0e;
+}
+
+/* Neutral theme for dashboard previews, so product UI isn't tinted by the site's sand. */
+html[data-scenario='dashboard'] {
+  --background: #f1f1f1;
+  --foreground: #161616;
+  --card: #ffffff;
+  --card-foreground: #161616;
+  --popover: #ffffff;
+  --popover-foreground: #161616;
+  --primary: #191715;
+  --primary-foreground: #faf9f7;
+  --secondary: #ffffff;
+  --secondary-foreground: #161616;
+  --muted: #f1f1f1;
+  --muted-foreground: #6b6b6b;
+  --accent: #f1f1f1;
+  --accent-foreground: #161616;
+  --destructive: #dc2626;
+  --border: #e6e6e6;
+  --input: #dcdcdc;
+  --ring: #a3a3a3;
+  --sidebar: #ebebeb;
+  --sidebar-foreground: #5c5c5c;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #161616;
+  --sidebar-accent: #e3e3e3;
+  --sidebar-accent-foreground: #161616;
+  --sidebar-border: #dedede;
+  --sidebar-ring: #a3a3a3;
+}
+
+html.dark[data-scenario='dashboard'] {
+  --background: #161616;
+  --foreground: #f9fbff;
+  --card: #1b1d1f;
+  --card-foreground: #f9fbff;
+  --popover: #1b1d1f;
+  --popover-foreground: #f9fbff;
+  --primary: #f7f6f3;
+  --primary-foreground: #191715;
+  --secondary: #1e1e1e;
+  --secondary-foreground: #f9fbff;
+  --muted: #2a2a2a;
+  --muted-foreground: #8a8a8a;
+  --accent: #2a2a2a;
+  --accent-foreground: #f9fbff;
+  --destructive: #f87171;
+  --border: #262626;
+  --input: #393939;
+  --ring: #676767;
+  --sidebar: #111111;
+  --sidebar-foreground: #8a8a8a;
+  --sidebar-primary: #2a2a2a;
+  --sidebar-primary-foreground: #f9fbff;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #f9fbff;
+  --sidebar-border: #232323;
+  --sidebar-ring: #676767;
 }
 
 @theme inline {
@@ -67,6 +168,19 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 
 import { kindTypes, scenarios, type Kind, type Scenario } from '../registry/config'
 import type { IndexedItem, ItemMeta } from '../registry/define'
-import { site } from '../lib/site'
+import { registryUrl, site } from '../lib/site'
 
 const ROOT = process.cwd()
 const REGISTRY = join(ROOT, 'registry')
@@ -81,7 +81,11 @@ const registry = {
     ...(e.categories?.length && { categories: [e.scenario, ...e.categories] }),
     ...(e.dependencies?.length && { dependencies: e.dependencies }),
     ...(e.devDependencies?.length && { devDependencies: e.devDependencies }),
-    ...(e.registryDependencies?.length && { registryDependencies: e.registryDependencies }),
+    ...(e.registryDependencies?.length && {
+      registryDependencies: e.registryDependencies.map((dep) =>
+        entries.some((x) => x.name === dep) ? registryUrl(dep) : dep,
+      ),
+    }),
     ...(e.cssVars && { cssVars: e.cssVars }),
     ...(e.css && { css: e.css }),
     files: e.files.map((path) => ({

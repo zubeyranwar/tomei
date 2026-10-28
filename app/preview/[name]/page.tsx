@@ -10,6 +10,14 @@ export const generateStaticParams = () => getItems().map(({ name }) => ({ name }
 
 export const metadata = { robots: { index: false } }
 
+const themeScript = (scenario: string) => `(() => {
+  const root = document.documentElement
+  root.dataset.scenario = ${JSON.stringify(scenario)}
+  const apply = (theme) => root.classList.toggle('dark', theme === 'dark')
+  apply(new URLSearchParams(location.search).get('theme'))
+  addEventListener('message', (e) => e.data?.type === 'tomei:theme' && apply(e.data.theme))
+})()`
+
 export default async function PreviewPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params
   const item = getItem(name)
@@ -17,8 +25,16 @@ export default async function PreviewPage({ params }: { params: Promise<{ name: 
   const { default: Demo } = await demos[name]()
 
   return (
-    <main className={cn('min-h-svh', item.kind === 'components' && 'grid place-items-center p-8')}>
-      <Demo />
-    </main>
+    <>
+      <script dangerouslySetInnerHTML={{ __html: themeScript(item.scenario) }} />
+      <main
+        className={cn(
+          'min-h-svh bg-background text-foreground',
+          item.kind === 'components' && 'grid place-items-center p-8',
+        )}
+      >
+        <Demo />
+      </main>
+    </>
   )
 }

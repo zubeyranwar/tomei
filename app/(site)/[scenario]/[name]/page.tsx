@@ -8,9 +8,9 @@ import { CopyButton } from '@/components/site/copy-button'
 import { Callout } from '@/components/site/docs/callout'
 import { CodeBlock } from '@/components/site/docs/code-block'
 import { Sidebar } from '@/components/site/docs/sidebar'
+import { ThemedPreview } from '@/components/site/docs/themed-preview'
 import { Toc } from '@/components/site/docs/toc'
 import { InstallCommand } from '@/components/site/install-command'
-import { PreviewFrame } from '@/components/site/preview-frame'
 import {
   getDemo,
   getItem,
@@ -112,12 +112,7 @@ export default async function ItemPage({ params }: Props) {
         </header>
 
         <section id="preview" className="scroll-mt-28">
-          <PreviewFrame
-            name={item.name}
-            title={item.title}
-            interactive
-            className="aspect-[16/10] rounded-2xl border"
-          />
+          <ThemedPreview name={item.name} title={item.title} />
         </section>
 
         <section id="installation" className="flex scroll-mt-28 flex-col gap-5">

@@ -50,7 +50,12 @@ Re-run `pnpm registry:index` (or restart dev) after adding or renaming an item.
 - Import `cn` from `@/lib/utils`. Import another item via its full path
   (`@/registry/landing/components/x/x`) and list it in `registryDependencies`; shadcn rewrites it on
   install. Use relative imports between files of the same item.
-- List every npm package in `dependencies`.
+- List every npm package in `dependencies`. List other Tomei items in `registryDependencies` by
+  name (e.g. `'chart-card'`); the indexer turns them into full registry URLs.
+- Extra tokens beyond shadcn's (e.g. `--shadow-button`) ship through `cssVars` in item.ts and are
+  used as `shadow-(--shadow-button)`. Mirror them in `app/globals.css` so the demos render.
+- Don't pass functions from a demo or page into client components; take serialisable props
+  (e.g. `Intl.NumberFormatOptions`) instead.
 - Add `'use client'` only to files that need it. Keep it on the smallest piece (e.g. `magnetic.tsx`,
   not `magnetic-button.tsx`) so items stay usable from server components with `as={Link}`.
 - Respect `prefers-reduced-motion` for animation.
@@ -61,6 +66,9 @@ Re-run `pnpm registry:index` (or restart dev) after adding or renaming an item.
 
 The site is light (sand) by default. Add the `dark` class to a section to flip it to ink; every
 shadcn token inside follows.
+
+Item pages have a light/dark switch for the preview (`/preview/<name>?theme=dark`). Dashboard
+previews use a neutral grey theme (`html[data-scenario='dashboard']` in globals.css) instead of sand.
 
 ## Code style
 
