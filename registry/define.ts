@@ -14,6 +14,7 @@ export type ItemMeta = {
   }
   css?: Record<string, unknown>
   docs?: string
+  hidden?: boolean
   date?: string
 }
 

@@ -18,8 +18,11 @@ import {
   type FormSection,
   type FormValues,
   type Context,
-} from './schema'
-import { standardSchema, type StandardSchema } from './standard-schema'
+} from '@/registry/dashboard/components/record-form/schema'
+import {
+  standardSchema,
+  type StandardSchema,
+} from '@/registry/dashboard/components/record-form/standard-schema'
 
 function nest<T extends FieldValues>(flat: FormErrors): FieldErrors<T> {
   const out: Record<string, unknown> = {}

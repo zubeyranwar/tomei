@@ -2,7 +2,11 @@
 
 import { useDropzone, type Accept, type FileRejection } from 'react-dropzone'
 
-import type { DropzoneHook, DropzoneState, Rejection } from './upload'
+import type {
+  DropzoneHook,
+  DropzoneState,
+  Rejection,
+} from '@/registry/dashboard/components/record-form/upload'
 
 function toAccept(accept?: string): Accept | undefined {
   if (!accept) return undefined

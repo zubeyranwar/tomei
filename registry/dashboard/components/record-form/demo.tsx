@@ -22,7 +22,7 @@ import {
   type Row,
   type Uploader,
 } from './record-form'
-import { useReactDropzone } from './react-dropzone'
+import { useReactDropzone } from '@/registry/dashboard/components/record-form-dropzone/record-form-dropzone'
 
 const money = (n: number) => Math.round(n * 100) / 100
 const lineTotal = (rows: unknown) =>

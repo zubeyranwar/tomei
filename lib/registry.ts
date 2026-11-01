@@ -6,10 +6,12 @@ import type { Scenario } from '@/registry/config'
 import type { IndexedItem } from '@/registry/define'
 import { registryUrl } from '@/lib/site'
 
-export const getItems = (scenario?: Scenario) =>
-  scenario ? items.filter((i) => i.scenario === scenario) : items
+const listed = items.filter((i) => !i.hidden)
 
-export const getItem = (name: string) => items.find((i) => i.name === name)
+export const getItems = (scenario?: Scenario) =>
+  scenario ? listed.filter((i) => i.scenario === scenario) : listed
+
+export const getItem = (name: string) => listed.find((i) => i.name === name)
 
 const read = (path: string) =>
   readFile(join(/* turbopackIgnore: true */ process.cwd(), path), 'utf8')
