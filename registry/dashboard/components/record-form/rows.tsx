@@ -369,6 +369,18 @@ export function RowsField({ Control, ...props }: NestedProps) {
   )
 
   const span = (disabled ? 0 : 2) + 1 + (details.length ? 1 : 0) + columns.length
+  const leads = { check: 0, number: disabled ? 0 : 2, details: (disabled ? 0 : 2) + 2.25 }
+  const firstLeft = leads.details + (details.length ? 1.75 : 0)
+  const pinned = (part: 'head' | 'body' | 'foot', left: number, edge = false) => ({
+    style: { left: `${left}rem` },
+    className: cn(
+      'sticky z-10',
+      part === 'head' && 'bg-[color-mix(in_oklab,var(--muted)_50%,var(--card))]',
+      part === 'foot' && 'bg-[color-mix(in_oklab,var(--muted)_30%,var(--card))]',
+      part === 'body' && 'bg-card group-data-[selected=true]:bg-muted',
+      edge && 'shadow-[1px_0_0_var(--border)]',
+    ),
+  })
 
   return (
     <div
@@ -465,15 +477,38 @@ export function RowsField({ Control, ...props }: NestedProps) {
             <thead>
               <tr className="border-b bg-muted/50 text-left text-xs text-muted-foreground">
                 {!disabled && (
-                  <th className="w-8 pl-1.5">{checkbox(allSelected, t('selectAll'), toggleAll)}</th>
+                  <th
+                    style={pinned('head', leads.check).style}
+                    className={cn(pinned('head', leads.check).className, 'w-8 min-w-8 pl-1.5')}
+                  >
+                    {checkbox(allSelected, t('selectAll'), toggleAll)}
+                  </th>
                 )}
-                <th className="w-9 px-1 text-center font-medium">#</th>
-                {details.length > 0 && <th className="w-7" aria-label="Details" />}
-                {columns.map((c) => (
+                <th
+                  style={pinned('head', leads.number).style}
+                  className={cn(
+                    pinned('head', leads.number).className,
+                    'w-9 min-w-9 px-1 text-center font-medium',
+                  )}
+                >
+                  #
+                </th>
+                {details.length > 0 && (
+                  <th
+                    aria-label="Details"
+                    style={pinned('head', leads.details).style}
+                    className={cn(pinned('head', leads.details).className, 'w-7 min-w-7')}
+                  />
+                )}
+                {columns.map((c, j) => (
                   <th
                     key={c.name}
                     scope="col"
-                    className="px-2 py-1.5 font-medium whitespace-nowrap"
+                    style={j === 0 ? pinned('head', firstLeft).style : undefined}
+                    className={cn(
+                      'px-2 py-1.5 font-medium whitespace-nowrap',
+                      j === 0 && pinned('head', firstLeft, true).className,
+                    )}
                   >
                     {c.label}
                     {c.required && <span aria-hidden> *</span>}
@@ -513,9 +548,10 @@ export function RowsField({ Control, ...props }: NestedProps) {
                         setDrag(null)
                         setArmed(null)
                       }}
+                      data-selected={selected.includes(row.id) || undefined}
                       className={cn(
                         'group border-b last:border-0',
-                        selected.includes(row.id) && 'bg-muted/40',
+                        selected.includes(row.id) && 'bg-muted',
                         drag?.from === i && 'opacity-50',
                         dropping &&
                           (drag!.over < drag!.from
@@ -524,7 +560,13 @@ export function RowsField({ Control, ...props }: NestedProps) {
                       )}
                     >
                       {!disabled && (
-                        <td className="pl-1.5 align-top">
+                        <td
+                          style={pinned('body', leads.check).style}
+                          className={cn(
+                            pinned('body', leads.check).className,
+                            'w-8 min-w-8 pl-1.5 align-top',
+                          )}
+                        >
                           <div className="flex h-11 items-center">
                             {checkbox(selected.includes(row.id), t('selectRow', { n: i + 1 }), () =>
                               toggleOne(row.id),
@@ -532,7 +574,13 @@ export function RowsField({ Control, ...props }: NestedProps) {
                           </div>
                         </td>
                       )}
-                      <td className="px-1 align-top">
+                      <td
+                        style={pinned('body', leads.number).style}
+                        className={cn(
+                          pinned('body', leads.number).className,
+                          'w-9 min-w-9 px-1 align-top',
+                        )}
+                      >
                         <div className="flex h-11 items-center justify-center text-xs text-muted-foreground tabular-nums">
                           {!disabled ? (
                             <>
@@ -556,7 +604,13 @@ export function RowsField({ Control, ...props }: NestedProps) {
                         </div>
                       </td>
                       {details.length > 0 && (
-                        <td className="align-top">
+                        <td
+                          style={pinned('body', leads.details).style}
+                          className={cn(
+                            pinned('body', leads.details).className,
+                            'w-7 min-w-7 align-top',
+                          )}
+                        >
                           <div className="flex h-11 items-center">
                             <button
                               type="button"
@@ -584,9 +638,11 @@ export function RowsField({ Control, ...props }: NestedProps) {
                           data-cell
                           data-row={i}
                           data-col={j}
+                          style={j === 0 ? pinned('body', firstLeft).style : undefined}
                           className={cn(
                             'px-1.5 py-1.5 align-top',
                             cellWidth[col.type] ?? 'min-w-36',
+                            j === 0 && pinned('body', firstLeft, true).className,
                           )}
                         >
                           {control(row, i, col, j, false)}
@@ -635,11 +691,26 @@ export function RowsField({ Control, ...props }: NestedProps) {
             {totals && (
               <tfoot>
                 <tr className="border-t bg-muted/30 font-medium">
-                  {!disabled && <td />}
-                  <td className="px-1 py-1.5 text-center text-xs text-muted-foreground">Σ</td>
-                  {details.length > 0 && <td />}
-                  {columns.map((c) => (
-                    <td key={c.name} className="px-3 py-1.5 tabular-nums">
+                  {!disabled && <td {...pinned('foot', leads.check)} />}
+                  <td
+                    style={pinned('foot', leads.number).style}
+                    className={cn(
+                      pinned('foot', leads.number).className,
+                      'px-1 py-1.5 text-center text-xs text-muted-foreground',
+                    )}
+                  >
+                    Σ
+                  </td>
+                  {details.length > 0 && <td {...pinned('foot', leads.details)} />}
+                  {columns.map((c, j) => (
+                    <td
+                      key={c.name}
+                      style={j === 0 ? pinned('foot', firstLeft).style : undefined}
+                      className={cn(
+                        'px-3 py-1.5 tabular-nums',
+                        j === 0 && pinned('foot', firstLeft, true).className,
+                      )}
+                    >
                       {totals.find((t) => t.name === c.name)?.text ?? ''}
                     </td>
                   ))}
