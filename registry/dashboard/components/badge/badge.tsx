@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 
 const tones = {
-  neutral: 'bg-muted text-muted-foreground',
+  neutral: 'bg-foreground/8 text-muted-foreground',
   success: 'bg-emerald-100 text-emerald-900 dark:bg-emerald-500/15 dark:text-emerald-300',
   warning: 'bg-yellow-200 text-yellow-900 dark:bg-yellow-400/15 dark:text-yellow-200',
   attention: 'bg-orange-200 text-orange-900 dark:bg-orange-400/15 dark:text-orange-200',

@@ -114,7 +114,7 @@ export function SidebarItem({
         aria-current={active ? 'page' : undefined}
         {...(external && { target: '_blank', rel: 'noreferrer' })}
         className={cn(
-          'group flex h-8 w-full items-center gap-2 rounded-lg px-2 text-left text-sm transition-colors duration-150 outline-none hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-(--shadow-button) [&_svg]:size-4 [&_svg]:shrink-0',
+          'group flex h-8 w-full items-center gap-2 rounded-lg px-2 text-left text-sm transition-colors duration-150 outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground [&_svg]:size-4 [&_svg]:shrink-0',
           className,
         )}
         {...props}

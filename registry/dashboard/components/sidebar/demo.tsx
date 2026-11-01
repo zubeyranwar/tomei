@@ -28,7 +28,7 @@ export default function Demo() {
     <div className="fixed inset-0 flex bg-background">
       <Sidebar>
         <SidebarHeader
-          logo={<span className="size-8 rounded-lg bg-primary" />}
+          logo={<span className="size-8 rounded-lg bg-sidebar-primary-foreground" />}
           title="Tomei"
           subtitle="Store admin"
         />

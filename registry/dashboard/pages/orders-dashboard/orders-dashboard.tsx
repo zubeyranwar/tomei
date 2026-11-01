@@ -69,7 +69,7 @@ export function OrdersDashboard() {
     <div className="flex h-svh overflow-hidden bg-background text-foreground">
       <Sidebar className="max-lg:hidden">
         <SidebarHeader
-          logo={<span className="size-8 rounded-lg bg-primary" />}
+          logo={<span className="size-8 rounded-lg bg-sidebar-primary-foreground" />}
           title="Tomei"
           subtitle="Store admin"
         />
