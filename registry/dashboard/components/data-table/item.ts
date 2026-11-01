@@ -5,6 +5,7 @@ export default defineItem({
   description:
     'An index table with view tabs, search, filter chips, a sort menu, sortable headers, row selection with bulk actions, loading rows and an empty state.',
   categories: ['tables', 'filters'],
+  registryDependencies: ['popover'],
   cssVars: {
     light: {
       'shadow-button':

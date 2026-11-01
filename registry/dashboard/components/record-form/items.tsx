@@ -17,7 +17,7 @@ import { toast } from '@/registry/dashboard/components/toast/toast'
 
 import { useFormConfig } from './context'
 import { optionRow } from './controls'
-import { Popover } from './popover'
+import { Popover } from '@/registry/dashboard/components/popover/popover'
 import { isNested, type FieldDef, type FieldValue, type Row } from './schema'
 
 export const newId = () => Math.random().toString(36).slice(2, 10)

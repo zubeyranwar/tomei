@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 
 import { Avatar, Check, OptionView, optionRow, triggerClass } from './controls'
 import { useFormConfig } from './context'
-import { Popover } from './popover'
+import { Popover } from '@/registry/dashboard/components/popover/popover'
 import { findOption, rememberOptions, type Option, type OptionObject } from './schema'
 
 type Status = 'idle' | 'loading' | 'done' | 'error'
@@ -170,6 +170,7 @@ export function LookupField({
 
   return (
     <Popover
+      block
       className="w-full min-w-64"
       trigger={({ open, toggle }) => (
         <div

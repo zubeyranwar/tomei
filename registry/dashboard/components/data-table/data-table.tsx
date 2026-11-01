@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
-import { Popover } from './popover'
+import { Popover } from '@/registry/dashboard/components/popover/popover'
 
 export type Column<T> = {
   key: string

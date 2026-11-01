@@ -9,6 +9,7 @@ type PopoverProps = {
   align?: 'start' | 'end'
   side?: 'top' | 'bottom'
   className?: string
+  block?: boolean
   children: React.ReactNode | ((close: () => void) => React.ReactNode)
 }
 
@@ -65,6 +66,7 @@ export function Popover({
   align = 'start',
   side = 'bottom',
   className,
+  block = false,
   children,
 }: PopoverProps) {
   const [open, setOpen] = useState(false)
@@ -75,17 +77,20 @@ export function Popover({
     const onPointer = (event: PointerEvent) => {
       if (!anchor.current?.contains(event.target as Node)) setOpen(false)
     }
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false)
     document.addEventListener('pointerdown', onPointer)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('pointerdown', onPointer)
-      document.removeEventListener('keydown', onKey)
-    }
+    return () => document.removeEventListener('pointerdown', onPointer)
   }, [open, anchor])
 
   return (
-    <div ref={anchor} className="relative flex w-full">
+    <div
+      ref={anchor}
+      className={cn('relative', block ? 'flex w-full' : 'inline-flex')}
+      onKeyDown={(event) => {
+        if (event.key !== 'Escape' || !open) return
+        event.stopPropagation()
+        setOpen(false)
+      }}
+    >
       {trigger({ open, toggle: () => setOpen(!open) })}
       {open && (
         <div

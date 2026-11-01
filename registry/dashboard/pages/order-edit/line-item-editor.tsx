@@ -6,7 +6,7 @@ import { Minus, Plus, Search, Trash2, Undo2 } from 'lucide-react'
 import { Badge } from '@/registry/dashboard/components/badge/badge'
 import { Button } from '@/registry/dashboard/components/button/button'
 import { Input } from '@/registry/dashboard/components/input/input'
-import { Popover } from '@/registry/dashboard/components/record-form/popover'
+import { Popover } from '@/registry/dashboard/components/popover/popover'
 
 export type EditItem = {
   id: string

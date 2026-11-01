@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 import { useFormConfig } from './context'
 import { optionRow } from './controls'
-import { Popover } from './popover'
+import { Popover } from '@/registry/dashboard/components/popover/popover'
 
 export type Country = { code: string; name: string; dial: string }
 

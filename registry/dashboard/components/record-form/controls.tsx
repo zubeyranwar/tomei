@@ -5,7 +5,7 @@ import { useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 import { useFormConfig } from './context'
-import { Popover } from './popover'
+import { Popover } from '@/registry/dashboard/components/popover/popover'
 import { normalizeOptions, type Option, type OptionObject } from './schema'
 
 export const triggerClass =
@@ -126,6 +126,7 @@ export function SelectField({
 
   return (
     <Popover
+      block
       className="w-full"
       trigger={({ open, toggle }) => (
         <button
@@ -268,6 +269,7 @@ export function MultiSelectField({
 
   return (
     <Popover
+      block
       className="w-full"
       trigger={({ open, toggle: toggleOpen }) => (
         <div
