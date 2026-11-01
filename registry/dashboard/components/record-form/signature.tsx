@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Maximize2, Undo2, X } from 'lucide-react'
+import { Maximize2, Undo2 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+
+import { Dialog } from '@/registry/dashboard/components/dialog/dialog'
 
 import { useFormConfig } from './context'
 
@@ -294,15 +296,6 @@ export function SignatureField({
     img.src = value
   }, [value])
 
-  useEffect(() => {
-    if (!expanded) return
-    const previous = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = previous
-    }
-  }, [expanded])
-
   const update = (next: {
     strokes?: Stroke[]
     typed?: string
@@ -401,71 +394,50 @@ export function SignatureField({
       </Paper>
       {controls}
 
-      {expanded && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
-          onPointerDown={(e) => e.target === e.currentTarget && cancel()}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('sign')}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') {
-                e.stopPropagation()
-                cancel()
-              }
-            }}
-            className="flex w-full max-w-6xl flex-col gap-3 rounded-2xl bg-card p-4 text-card-foreground shadow-(--shadow-overlay)"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold">{t('sign')}</h2>
-              <button
-                type="button"
-                aria-label={t('closeWithoutSaving')}
-                onClick={cancel}
-                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground [&_svg]:size-4"
-              >
-                <X />
-              </button>
-            </div>
-            <Paper>
-              <Pad
-                strokes={strokes}
-                typed={typed}
-                mode={mode}
-                base={base}
-                label={t('signaturePad')}
-                onStroke={(s) => update({ strokes: [...strokes, s] })}
-              />
-              {!hasInk && mode === 'draw' && (
-                <span className="pointer-events-none absolute bottom-[6%] left-[4%] text-sm text-neutral-400">
-                  {t('signAbove')}
-                </span>
-              )}
-            </Paper>
-            <Controls
-              mode={mode}
+      <Dialog
+        open={expanded}
+        onOpenChange={(next) => !next && cancel()}
+        title={t('sign')}
+        size="full"
+        closeLabel={t('closeWithoutSaving')}
+      >
+        <div className="flex flex-col gap-3">
+          <Paper>
+            <Pad
+              strokes={strokes}
               typed={typed}
-              canUndo={strokes.length > 0}
-              canClear={hasInk}
-              onMode={(m) => update({ mode: m, strokes: [], typed: '', base: null })}
-              onTyped={(t) => update({ typed: t })}
-              onUndo={() => update({ strokes: strokes.slice(0, -1) })}
-              onClear={clear}
+              mode={mode}
+              base={base}
+              label={t('signaturePad')}
+              onStroke={(s) => update({ strokes: [...strokes, s] })}
+            />
+            {!hasInk && mode === 'draw' && (
+              <span className="pointer-events-none absolute bottom-[6%] left-[4%] text-sm text-neutral-400">
+                {t('signAbove')}
+              </span>
+            )}
+          </Paper>
+          <Controls
+            mode={mode}
+            typed={typed}
+            canUndo={strokes.length > 0}
+            canClear={hasInk}
+            onMode={(m) => update({ mode: m, strokes: [], typed: '', base: null })}
+            onTyped={(t) => update({ typed: t })}
+            onUndo={() => update({ strokes: strokes.slice(0, -1) })}
+            onClear={clear}
+          >
+            <button
+              type="button"
+              data-autofocus
+              onClick={() => setExpanded(false)}
+              className="ml-1 h-8 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
-              <button
-                type="button"
-                autoFocus
-                onClick={() => setExpanded(false)}
-                className="ml-1 h-8 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                {t('done')}
-              </button>
-            </Controls>
-          </div>
+              {t('done')}
+            </button>
+          </Controls>
         </div>
-      )}
+      </Dialog>
     </div>
   )
 }

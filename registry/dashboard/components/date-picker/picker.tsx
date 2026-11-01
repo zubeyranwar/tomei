@@ -86,24 +86,23 @@ export function Picker({
     const onPointer = (event: PointerEvent) => {
       if (!root.current?.contains(event.target as Node)) setOpen(false)
     }
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return
-      event.stopPropagation()
-      setOpen(false)
-      trigger.current?.focus()
-    }
     document.addEventListener('pointerdown', onPointer)
-    document.addEventListener('keydown', onKey, true)
-    return () => {
-      document.removeEventListener('pointerdown', onPointer)
-      document.removeEventListener('keydown', onKey, true)
-    }
+    return () => document.removeEventListener('pointerdown', onPointer)
   }, [open])
 
   const showClear = clearable && !!text && !disabled && !!onClear
 
   return (
-    <div ref={root} className={cn('relative w-full min-w-0', className)}>
+    <div
+      ref={root}
+      className={cn('relative w-full min-w-0', className)}
+      onKeyDown={(event) => {
+        if (event.key !== 'Escape' || !open) return
+        event.stopPropagation()
+        setOpen(false)
+        trigger.current?.focus()
+      }}
+    >
       <button
         ref={trigger}
         id={id}
