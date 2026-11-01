@@ -22,14 +22,18 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.23",
     "lucide-react": "^1.63.0",
     "motion": "^14.7.1",
     "next": "^16.4.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-dropzone": "^20.1.4",
+    "react-hook-form": "^7.91.0",
     "recharts": "^3.10.1",
     "shiki": "^4.5.0",
-    "tailwind-merge": "^3.7.0"
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
