@@ -24,6 +24,7 @@ import {
   SidebarHeader,
   SidebarItem,
 } from '@/registry/dashboard/components/sidebar/sidebar'
+import { toast, Toaster } from '@/registry/dashboard/components/toast/toast'
 import { useHistory } from '@/registry/dashboard/components/use-history/use-history'
 import { cn } from '@/lib/utils'
 
@@ -86,6 +87,9 @@ export function ImageEdit() {
     history.reset(doc)
     setJustSaved(true)
     setTimeout(() => setJustSaved(false), 1500)
+    toast.success('Images saved', {
+      description: `${doc.images.length} image${doc.images.length === 1 ? '' : 's'} updated.`,
+    })
   }
 
   return (
@@ -240,6 +244,7 @@ export function ImageEdit() {
           />
         </div>
       </main>
+      <Toaster />
     </div>
   )
 }
