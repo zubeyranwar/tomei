@@ -2,9 +2,25 @@ import { cn } from '@/lib/utils'
 
 import { addDays, sameDay } from './dates'
 
-const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-const monthFormat = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' })
-const labelFormat = new Intl.DateTimeFormat('en-US', { dateStyle: 'full' })
+const formats = new Map<
+  string,
+  { weekdays: string[]; month: Intl.DateTimeFormat; label: Intl.DateTimeFormat }
+>()
+function formatsFor(locale = 'en-US') {
+  let f = formats.get(locale)
+  if (!f) {
+    const day = new Intl.DateTimeFormat(locale, { weekday: 'short' })
+    f = {
+      weekdays: Array.from({ length: 7 }, (_, i) =>
+        day.format(new Date(2024, 0, 7 + i)).slice(0, 2),
+      ),
+      month: new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }),
+      label: new Intl.DateTimeFormat(locale, { dateStyle: 'full' }),
+    }
+    formats.set(locale, f)
+  }
+  return f
+}
 
 type CalendarMonthProps = {
   month: Date
@@ -13,11 +29,13 @@ type CalendarMonthProps = {
   preview: Date | null
   focused: Date
   today: Date
+  minDate?: Date
   maxDate?: Date
   onSelect: (date: Date) => void
   onHover: (date: Date | null) => void
   onKeyDown: (event: React.KeyboardEvent, date: Date) => void
   header?: React.ReactNode
+  locale?: string
 }
 
 export function CalendarMonth({
@@ -27,12 +45,15 @@ export function CalendarMonth({
   preview,
   focused,
   today,
+  minDate,
   maxDate,
   onSelect,
   onHover,
   onKeyDown,
   header,
+  locale,
 }: CalendarMonthProps) {
+  const { weekdays, month: monthFormat, label: labelFormat } = formatsFor(locale)
   const first = new Date(month.getFullYear(), month.getMonth(), 1)
   const length = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate()
   const days = Array.from({ length }, (_, i) => addDays(first, i))
@@ -54,7 +75,7 @@ export function CalendarMonth({
           <span key={`blank-${i}`} />
         ))}
         {days.map((day) => {
-          const disabled = !!maxDate && day > maxDate
+          const disabled = (!!maxDate && day > maxDate) || (!!minDate && day < minDate)
           const isStart = sameDay(day, from)
           const isEnd = sameDay(day, to)
           const inRange = !!from && !!to && day >= from && day <= to && !sameDay(from, to)
@@ -96,4 +117,4 @@ export function CalendarMonth({
   )
 }
 
-export const monthTitle = (month: Date) => monthFormat.format(month)
+export const monthTitle = (month: Date, locale?: string) => formatsFor(locale).month.format(month)
