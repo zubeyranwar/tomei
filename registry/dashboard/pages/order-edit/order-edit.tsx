@@ -26,6 +26,8 @@ import {
   type FormLayout,
   type FormSection,
   type FormValues,
+  ChangeList,
+  normalizeOptions,
 } from '@/registry/dashboard/components/record-form/record-form'
 import {
   Sidebar,
@@ -35,9 +37,10 @@ import {
   SidebarHeader,
   SidebarItem,
 } from '@/registry/dashboard/components/sidebar/sidebar'
+import { toast, Toaster } from '@/registry/dashboard/components/toast/toast'
 import { useHistory } from '@/registry/dashboard/components/use-history/use-history'
 
-import { ChangeList, diffRecord } from './changes'
+import { diffRecord } from './changes'
 import * as demo from './data'
 import { LineItemEditor, type EditItem, type Product } from './line-item-editor'
 import { StagePath } from './stage-path'
@@ -94,7 +97,8 @@ export function OrderEdit({
   const changes = diffRecord(sections, saved, history.value)
   const dirty = changes.length > 0
 
-  const stageOptions = sections.flatMap((s) => s.fields).find((f) => f.name === stageField)?.options
+  const stageDef = sections.flatMap((s) => s.fields).find((f) => f.name === stageField)
+  const stageOptions = stageDef?.options && normalizeOptions(stageDef.options).map((o) => o.value)
   const totalsOf = (s: Snapshot) => {
     const shown = new Set(visibleFields(sections, s.values).map((f) => f.name))
     const read = (name?: string) => (name && shown.has(name) ? num(s.values[name]) : 0)
@@ -122,6 +126,9 @@ export function OrderEdit({
     history.reset()
     setJustSaved(true)
     setTimeout(() => setJustSaved(false), 1500)
+    toast.success(`${title} updated`, {
+      description: notify ? 'The customer was emailed an updated invoice.' : undefined,
+    })
   }
 
   return (
@@ -277,7 +284,7 @@ export function OrderEdit({
                 />
               </TotalsCard>
 
-              {dirty && <ChangeList changes={changes} />}
+              <ChangeList changes={changes} />
             </div>
 
             <RecordForm
@@ -290,6 +297,7 @@ export function OrderEdit({
           </div>
         </div>
       </main>
+      <Toaster />
     </div>
   )
 }
