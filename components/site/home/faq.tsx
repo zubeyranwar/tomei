@@ -3,27 +3,31 @@ import { site } from '@/lib/site'
 const questions = [
   {
     q: `Is ${site.name} free?`,
-    a: 'Yes. Browse, install and copy anything in the registry.',
+    a: 'Yes. Browse, install and edit anything in the registry.',
   },
   {
     q: 'What do I need to use it?',
-    a: 'A React project with Tailwind CSS v4. For the one-command install, run `npx shadcn@latest init` first.',
+    a: 'A React project with Tailwind CSS v4 and shadcn set up. If you haven’t yet, run `npx shadcn@latest init` first.',
   },
   {
-    q: 'Does it work outside Next.js?',
-    a: 'Yes. Items are plain React components, so Vite, React Router, Astro islands and others all work.',
+    q: 'How do I install an item?',
+    a: `Copy the command from its page, or add the registry to components.json and run \`npx shadcn@latest add ${site.namespace}/<name>\`. Dependencies and other ${site.name} items it needs come with it.`,
+  },
+  {
+    q: 'Which frameworks does it work with?',
+    a: 'Any React setup: Next.js, Vite, React Router, Farm.js, Astro islands and more. Items are plain components styled with shadcn tokens.',
+  },
+  {
+    q: 'Can I change the code?',
+    a: 'Yes, it’s yours. Files are copied into `components/<scenario>` in your project, so edit them like any other component.',
   },
   {
     q: 'What is the difference between Landing and Dashboard?',
     a: 'They are scenarios. Landing items aim for motion, typography and character; Dashboard items for dense, practical product UI.',
   },
   {
-    q: 'What does "Copy prompt" do?',
-    a: 'It copies a ready-made prompt with the full source, dependencies and setup steps, so an AI assistant can add the item for you.',
-  },
-  {
     q: 'Can I contribute?',
-    a: 'Yes. Read AGENT.md in the repository, scaffold an item with `pnpm new`, and open a pull request.',
+    a: 'Yes. Read CONTRIBUTING.md in the repository. Fixes, docs and tooling are welcome straight away; open an issue first for new items.',
   },
 ]
 

@@ -54,6 +54,9 @@ Re-run `pnpm registry:index` (or restart dev) after adding or renaming an item.
   objects; an optional catch-all `[[...slug]]` is one `/`-joined string (`''` at the root).
 - A client component only hydrates if a page imports it statically. Demos load through
   `components/site/demo.tsx`, which lazy-loads them by name.
+- Pages that use client components and touch server-only code (`node:fs`, fetches, `lib/registry`)
+  must be `async`. A synchronous page hydrates as one whole client route, its chunk fails to load,
+  and nothing on it hydrates (this is what blanked the home page previews).
 - MDX outside `app/` compiles through `@mdx-js/rollup` (configured in `farm.config.ts`); pass
   `components={mdxComponents}` when rendering it.
 - Deploys: on Vercel (`VERCEL` is set) the build uses Farm's `vercel` preset and writes
