@@ -21,9 +21,9 @@ See [AGENT.md](./AGENT.md) for structure and rules.
 
 ### Fonts
 
-The site uses PP Neue Montreal (personal-use licence, not redistributable), so the files are
-gitignored. Copy the `.woff2` builds into `public/fonts/`. Without them, the site falls back to
-metric-matched Arial.
+The site uses PP Neue Montreal, licensed for this site and served from `public/fonts/`. The fonts
+are for the Tomei site only: don't reuse them in other projects, and don't reference them from
+registry items.
 
 ## Contributing
 

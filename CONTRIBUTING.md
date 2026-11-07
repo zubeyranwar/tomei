@@ -22,9 +22,6 @@ pnpm install
 pnpm dev            # indexes the registry, then starts Farm.js
 ```
 
-The site uses PP Neue Montreal, which can't be redistributed. Without the font files in
-`public/fonts/` it falls back to Arial. That's fine for development. **Never commit font files.**
-
 ## Project layout
 
 ```

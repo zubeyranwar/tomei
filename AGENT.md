@@ -99,5 +99,5 @@ previews use a neutral grey theme (`html[data-scenario='dashboard']` in globals.
 ## Don'ts
 
 - Never commit, push or open PRs unless asked.
-- Never commit font files: PP Neue Montreal is licensed for personal use only.
+- Don't reference PP Neue Montreal (`public/fonts/`) from registry items; it's licensed for the site only.
 - Don't edit generated files (`registry.json`, `registry/__index__.ts`, `public/ui/r`).
