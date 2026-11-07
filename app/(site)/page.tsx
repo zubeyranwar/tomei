@@ -10,7 +10,7 @@ import { getItems } from '@/lib/registry'
 
 export const revalidate = 86_400
 
-export default function HomePage() {
+export default async function HomePage() {
   return (
     <>
       <Hero />
