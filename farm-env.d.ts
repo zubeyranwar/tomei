@@ -8,7 +8,11 @@ declare module '@farm.js/core' {
     robots?: { index?: boolean; follow?: boolean }
   }
 
-  export function defineConfig(config: { srcDir?: string; vite?: UserConfig }): unknown
+  export function defineConfig(config: {
+    srcDir?: string
+    preset?: 'node-server' | 'vercel' | 'vercel-edge' | 'netlify' | 'cloudflare'
+    vite?: UserConfig
+  }): unknown
 }
 
 declare module '@farm.js/core/navigation' {

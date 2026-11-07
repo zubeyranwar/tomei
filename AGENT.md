@@ -56,6 +56,9 @@ Re-run `pnpm registry:index` (or restart dev) after adding or renaming an item.
   `components/site/demo.tsx`, which lazy-loads them by name.
 - MDX outside `app/` compiles through `@mdx-js/rollup` (configured in `farm.config.ts`); pass
   `components={mdxComponents}` when rendering it.
+- Deploys: on Vercel (`VERCEL` is set) the build uses Farm's `vercel` preset and writes
+  `.vercel/output`; locally it builds a Node server for `pnpm start`. `vercel.json` sets
+  `framework: null` so Vercel doesn't treat the project as Next.js.
 
 ## Registry item rules
 

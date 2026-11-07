@@ -7,6 +7,7 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 
 export default defineConfig({
   srcDir: '.',
+  preset: process.env.VERCEL ? 'vercel' : 'node-server',
   vite: {
     plugins: [
       tailwindcss(),
