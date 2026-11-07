@@ -1,8 +1,16 @@
 import { CopyButton } from '@/components/site/copy-button'
 import { highlight } from '@/lib/highlight'
 
-export async function CodeBlock({ code, filename }: { code: string; filename: string }) {
-  const html = await highlight(code, filename)
+export async function CodeBlock({
+  code,
+  filename,
+  lang,
+}: {
+  code: string
+  filename: string
+  lang?: string
+}) {
+  const html = await highlight(code, lang ? `.${lang}` : filename)
 
   return (
     <figure className="overflow-hidden rounded-xl border bg-card">

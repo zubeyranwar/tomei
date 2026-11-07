@@ -1,6 +1,26 @@
+import { useFormState, useWatch, type UseFormReturn } from 'react-hook-form'
+
 import { cn } from '@/lib/utils'
 
-import type { Change } from './schema'
+import { useFormConfig, useResolvedConfig, type RecordFormSettings } from './context'
+import {
+  diffValues,
+  type Change,
+  type FieldTypeMap,
+  type FormSection,
+  type FormValues,
+} from './schema'
+
+export function useFormChanges(
+  form: UseFormReturn<FormValues>,
+  sections: FormSection[],
+  { fieldTypes, ...settings }: { fieldTypes?: FieldTypeMap } & RecordFormSettings = {},
+): Change[] {
+  const { t, locale, roles } = useResolvedConfig(settings, useFormConfig())
+  const values = useWatch({ control: form.control }) as FormValues
+  const { defaultValues = {} } = useFormState({ control: form.control })
+  return diffValues(sections, defaultValues as FormValues, values, fieldTypes, { t, locale, roles })
+}
 
 type ChangeListProps = {
   changes: Change[]

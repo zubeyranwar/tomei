@@ -1,0 +1,80 @@
+## Built on react-hook-form
+
+Record Form doesn't keep its own state. You own the form with `useForm`, and `RecordForm` renders
+every field as a react-hook-form `Controller`. Everything you know from react-hook-form applies:
+`mode`, `reset`, `watch`, `formState`, `handleSubmit`.
+
+```tsx
+const form = useForm<FormValues>({
+  defaultValues,
+  mode: 'onBlur',
+  resolver: recordFormResolver({ sections }),
+})
+
+return (
+  <form onSubmit={form.handleSubmit(save)}>
+    <RecordForm form={form} sections={sections} />
+    <button type="submit">Save</button>
+  </form>
+)
+```
+
+## Validation
+
+`recordFormResolver` runs the rules in your sections (`required`, `min`, `pattern`, conditions,
+row rules...) and returns them as react-hook-form errors. Pass any Standard Schema (Zod, Valibot,
+ArkType) as `schema` for cross-field checks. Both run, and errors merge by field path.
+
+```tsx
+const schema = z.object({ title: z.string().min(3) })
+
+useForm({ resolver: recordFormResolver({ sections, schema, roles, locale: 'fr', messages: fr }) })
+```
+
+<Callout type="tip" title="Errors in your language">
+  The resolver builds the messages, so give it the same `locale`, `messages` or `translate` you pass
+  to `RecordForm`.
+</Callout>
+
+## Saving
+
+- Your own button: `form.handleSubmit(save)`.
+- Steps layout: pass `onSubmit={save}` and the last step submits through `handleSubmit`.
+- After a save, call `form.reset(values)` so the form is clean again.
+
+Calculated fields are written back into the values while the user types, and the resolver
+returns the final computed values to your submit handler.
+
+## Changes, drafts and autosave
+
+```tsx
+const changes = useFormChanges(form, sections)
+
+<RecordForm
+  form={form}
+  sections={sections}
+  draftKey="order-1078"
+  autosave={{ save: (values) => api.save(values), delay: 1500 }}
+/>
+<ChangeList changes={changes} />
+```
+
+`draftKey` keeps unsaved edits in `localStorage` and offers to restore them. `autosave` saves after
+a pause and resets the form's defaults to what was saved. The leave warning turns on while the
+form is dirty or uploading. Turn it off with `warnOnLeave={false}`.
+
+## Props
+
+| Prop         | Type                                          | Default       |
+| ------------ | --------------------------------------------- | ------------- |
+| `form`       | `UseFormReturn<FormValues>`                   | required      |
+| `sections`   | `FormSection[]`                               | required      |
+| `layout`     | `'accordion' \| 'tabs' \| 'cards' \| 'steps'` | `'accordion'` |
+| `mode`       | `'edit' \| 'view'`                            | `'edit'`      |
+| `onSubmit`   | `SubmitHandler<FormValues>`                   | none          |
+| `draftKey`   | `string`                                      | none          |
+| `autosave`   | `{ save, delay? }`                            | none          |
+| `upload`     | `(file, { onProgress, signal }) => Promise`   | none          |
+| `roles`      | `string[]`                                    | none          |
+| `locale`     | `string`                                      | `'en'`        |
+| `fieldTypes` | `Record<string, FieldTypeRenderer>`           | none          |

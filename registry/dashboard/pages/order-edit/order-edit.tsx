@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   BarChart3,
   ChevronDown,
@@ -14,6 +14,7 @@ import {
   Users,
   X,
 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 
 import { cn } from '@/lib/utils'
 import { Badge } from '@/registry/dashboard/components/badge/badge'
@@ -21,7 +22,7 @@ import { Button } from '@/registry/dashboard/components/button/button'
 import { ToggleField } from '@/registry/dashboard/components/record-form/controls'
 import {
   RecordForm,
-  validateRecord,
+  recordFormResolver,
   visibleFields,
   type FormLayout,
   type FormSection,
@@ -89,7 +90,7 @@ export function OrderEdit({
   const history = useHistory<Snapshot>(initial, { hotkeys: true })
   const { values, items } = history.value
   const [saved, setSaved] = useState<Snapshot>(initial)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [itemsError, setItemsError] = useState('')
   const [notify, setNotify] = useState(true)
   const [justSaved, setJustSaved] = useState(false)
 
@@ -107,21 +108,40 @@ export function OrderEdit({
   const totals = totalsOf(history.value)
   const count = items.reduce((sum, i) => sum + i.quantity, 0)
 
-  const setValue = (name: string, value: FormValues[string]) => {
-    history.set((s) => ({ ...s, values: { ...s.values, [name]: value } }), { merge: name })
-    if (errors[name]) setErrors({ ...errors, [name]: '' })
-  }
+  const form = useForm<FormValues>({
+    values,
+    resetOptions: { keepErrors: true, keepIsSubmitted: true },
+    resolver: recordFormResolver({ sections }),
+  })
+  const { set } = history
+  useEffect(
+    () =>
+      form.subscribe({
+        formState: { values: true },
+        callback: ({ values: next, name }) => {
+          if (name) set((s) => ({ ...s, values: { ...next } }), { merge: name })
+        },
+      }),
+    [form, set],
+  )
+
+  const setValue = (name: string, value: FormValues[string]) =>
+    form.setValue(name, value, { shouldValidate: form.formState.isSubmitted })
 
   const cancel = () => {
     history.reset(saved)
-    setErrors({})
+    form.clearErrors()
+    setItemsError('')
   }
 
-  const save = () => {
-    const found = validateRecord(sections, values)
-    if (items.some((i) => !i.name.trim())) found.items = 'Every item needs a name'
-    setErrors(found)
-    if (Object.values(found).some(Boolean)) return
+  const checkItems = () => {
+    const error = items.some((i) => !i.name.trim()) ? 'Every item needs a name' : ''
+    setItemsError(error)
+    return !error
+  }
+
+  const save = form.handleSubmit(() => {
+    if (!checkItems()) return
     setSaved(history.value)
     history.reset()
     setJustSaved(true)
@@ -129,7 +149,7 @@ export function OrderEdit({
     toast.success(`${title} updated`, {
       description: notify ? 'The customer was emailed an updated invoice.' : undefined,
     })
-  }
+  }, checkItems)
 
   return (
     <div className="flex h-svh overflow-hidden bg-sidebar text-foreground">
@@ -264,7 +284,7 @@ export function OrderEdit({
                     history.set((s) => ({ ...s, items: next }), merge ? { merge } : undefined)
                   }
                 />
-                {errors.items && <p className="text-sm text-destructive">{errors.items}</p>}
+                {itemsError && <p className="text-sm text-destructive">{itemsError}</p>}
               </div>
 
               <TotalsCard
@@ -287,13 +307,7 @@ export function OrderEdit({
               <ChangeList changes={changes} />
             </div>
 
-            <RecordForm
-              layout={formLayout}
-              sections={sections}
-              values={values}
-              errors={errors}
-              onChange={setValue}
-            />
+            <RecordForm form={form} layout={formLayout} sections={sections} warnOnLeave={false} />
           </div>
         </div>
       </main>

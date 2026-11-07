@@ -27,4 +27,5 @@ export type IndexedItem = ItemMeta & {
   dir: string
   files: string[]
   hasPrompt: boolean
+  hasDocs: boolean
 }

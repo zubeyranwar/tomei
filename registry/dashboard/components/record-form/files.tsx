@@ -2,13 +2,32 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { RotateCw, Upload, X } from 'lucide-react'
+import { useDropzone, type Accept, type FileRejection } from 'react-dropzone'
 
 import { cn } from '@/lib/utils'
 import { toast } from '@/registry/dashboard/components/toast/toast'
 
 import { useFormConfig } from './context'
 import { showSize, type FileItem } from './schema'
-import { useNativeDropzone, type DropzoneHook, type Rejection } from './upload'
+
+type Rejection = { file: File; reason: 'size' | 'type' | 'count' }
+
+function toAccept(accept?: string): Accept | undefined {
+  if (!accept) return undefined
+  const result: Accept = {}
+  const extensions: string[] = []
+  for (const part of accept.split(',').map((a) => a.trim())) {
+    if (part.startsWith('.')) extensions.push(part)
+    else result[part] = []
+  }
+  if (extensions.length) result['application/octet-stream'] = extensions
+  return result
+}
+
+const reasonOf = (r: FileRejection): Rejection['reason'] => {
+  const code = r.errors[0]?.code
+  return code === 'file-too-large' ? 'size' : code === 'too-many-files' ? 'count' : 'type'
+}
 
 const newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
 
@@ -35,7 +54,7 @@ export function FileField({
   describedBy?: string
   onChange: (value: FileItem[]) => void
 }) {
-  const { upload, dropzone, t } = useFormConfig()
+  const { upload, t } = useFormConfig()
   const current = useRef(value)
   const sources = useRef(new Map<string, File>())
   const controllers = useRef(new Map<string, AbortController>())
@@ -157,7 +176,6 @@ export function FileField({
       {!disabled && !full && (
         <DropArea
           id={id}
-          hook={dropzone ?? useNativeDropzone}
           accept={accept}
           multiple={multiple}
           maxSize={maxSize}
@@ -264,7 +282,6 @@ export function FileField({
 
 function DropArea({
   id,
-  hook: useDropzone,
   accept,
   multiple,
   maxSize,
@@ -276,7 +293,6 @@ function DropArea({
   onReject,
 }: {
   id: string
-  hook: DropzoneHook
   accept?: string
   multiple: boolean
   maxSize?: number
@@ -288,10 +304,20 @@ function DropArea({
   onReject: (rejections: Rejection[]) => void
 }) {
   const { t } = useFormConfig()
-  const zone = useDropzone({ accept, multiple, maxSize, maxFiles, onFiles, onReject })
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: toAccept(accept),
+    multiple,
+    maxSize,
+    maxFiles: multiple ? (maxFiles ?? 0) : 1,
+    onDrop: (accepted, rejections) => {
+      if (accepted.length) onFiles(accepted)
+      if (rejections.length)
+        onReject(rejections.map((r) => ({ file: r.file, reason: reasonOf(r) })))
+    },
+  })
   return (
     <div
-      {...zone.rootProps}
+      {...getRootProps()}
       id={id}
       role="button"
       tabIndex={0}
@@ -299,12 +325,12 @@ function DropArea({
       data-invalid={invalid || undefined}
       className={cn(
         'flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed px-3 py-4 text-center text-sm transition-colors outline-none focus-visible:border-ring data-invalid:border-destructive',
-        zone.isDragActive ? 'border-ring bg-muted' : 'border-input hover:border-ring',
+        isDragActive ? 'border-ring bg-muted' : 'border-input hover:border-ring',
       )}
     >
-      <input {...zone.inputProps} />
+      <input {...getInputProps()} />
       <Upload className="size-4 text-muted-foreground" />
-      {zone.isDragActive ? (
+      {isDragActive ? (
         <span className="font-medium">{t('dropNow')}</span>
       ) : (
         <span>

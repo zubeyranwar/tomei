@@ -27,5 +27,5 @@ metric-matched Arial.
 
 ## Contributing
 
-Pre-commit hooks run ESLint and Prettier on staged files; commit messages follow
-[Conventional Commits](https://www.conventionalcommits.org). Run `pnpm check` before opening a PR.
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Docs are MDX: site pages live in `content/docs/`, item
+docs in a `docs.mdx` next to the item.

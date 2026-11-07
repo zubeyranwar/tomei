@@ -4,6 +4,7 @@ import 'dayjs/locale/fr'
 
 import { useMemo, useState } from 'react'
 import { Building2, ClipboardList, Layers, Package, Paperclip, Wallet } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { cn } from '@/lib/utils'
@@ -11,18 +12,19 @@ import { toast, Toaster } from '@/registry/dashboard/components/toast/toast'
 import { Button } from '@/registry/dashboard/components/button/button'
 
 import {
+  applyComputed,
   ChangeList,
   RecordForm,
-  standardSchema,
-  useRecordForm,
+  recordFormResolver,
+  useFormChanges,
   type FormLayout,
   type FormSection,
+  type FormValues,
   type Messages,
   type OptionObject,
   type Row,
   type Uploader,
 } from './record-form'
-import { useReactDropzone } from '@/registry/dashboard/components/record-form-dropzone/record-form-dropzone'
 
 const money = (n: number) => Math.round(n * 100) / 100
 const lineTotal = (rows: unknown) =>
@@ -507,6 +509,70 @@ function Pills<T extends string>({
   )
 }
 
+const defaultValues = applyComputed(sections, {
+  customer: 'cus-42',
+  team: ['emp-3'],
+  phone: '+251 911 234 567',
+  site: '',
+  period: '',
+  inspection: '',
+  value: '1500000',
+  retention: '5',
+  effort: '2160',
+  scope: '<p>Supply and fix <b>rebar</b> for the ground slab.</p>',
+  signedBy: '',
+  title: 'Untitled request',
+  requester: 'emp-2',
+  neededBy: '',
+  window: '08:00',
+  budgetMonth: '2026-11',
+  lines: [
+    {
+      id: 'a',
+      item: 'Rebar 12 mm',
+      qty: '40',
+      unit: 'pcs',
+      cost: '620.00',
+      status: 'In stock',
+      eta: '',
+      supplier: 'cus-42',
+      notes: '',
+      deliveries: [{ id: 'd1', date: '2026-11-20', qty: '20', received: false }],
+    },
+    {
+      id: 'b',
+      item: 'Cement',
+      qty: '25',
+      unit: 'bag',
+      cost: '',
+      status: 'Backorder',
+      eta: '',
+      supplier: '',
+      notes: '',
+      deliveries: [],
+    },
+  ],
+  phases: [
+    {
+      id: 'ph1',
+      name: 'Foundations',
+      owner: 'emp-2',
+      period: '',
+      budget: '450000.00',
+      deliverables: [{ id: 'dl1', title: 'Excavation sign-off', due: '', done: false }],
+    },
+  ],
+  schedule: [
+    { id: 'p1', name: 'Advance', pct: '30', due: '' },
+    { id: 'p2', name: 'On delivery', pct: '60', due: '' },
+  ],
+  approval: 'approved',
+  approvalNote: '',
+  checks: ['Within budget'],
+  specs: ['Grade 60 steel'],
+  quotes: [],
+})
+
 export default function Demo() {
   const [layout, setLayout] = useState<FormLayout>('accordion')
   const [mode, setMode] = useState<'edit' | 'view'>('edit')
@@ -522,90 +588,29 @@ export default function Demo() {
         : undefined,
     [autosaveOn],
   )
-  const form = useRecordForm({
-    sections,
-    roles,
-    locale: lang,
-    messages: lang === 'fr' ? fr : undefined,
-    upload: fakeUpload,
-    dropzone: useReactDropzone,
-    draftKey: 'demo-purchase-request',
-    autosave,
-    validateOn: 'blur',
-    resolver: standardSchema(schema),
-    initialValues: {
-      customer: 'cus-42',
-      team: ['emp-3'],
-      phone: '+251 911 234 567',
-      site: '',
-      period: '',
-      inspection: '',
-      value: '1500000',
-      retention: '5',
-      effort: '2160',
-      scope: '<p>Supply and fix <b>rebar</b> for the ground slab.</p>',
-      signedBy: '',
-      title: 'Untitled request',
-      requester: 'emp-2',
-      neededBy: '',
-      window: '08:00',
-      budgetMonth: '2026-11',
-      lines: [
-        {
-          id: 'a',
-          item: 'Rebar 12 mm',
-          qty: '40',
-          unit: 'pcs',
-          cost: '620.00',
-          status: 'In stock',
-          eta: '',
-          supplier: 'cus-42',
-          notes: '',
-          deliveries: [{ id: 'd1', date: '2026-11-20', qty: '20', received: false }],
-        },
-        {
-          id: 'b',
-          item: 'Cement',
-          qty: '25',
-          unit: 'bag',
-          cost: '',
-          status: 'Backorder',
-          eta: '',
-          supplier: '',
-          notes: '',
-          deliveries: [],
-        },
-      ],
-      phases: [
-        {
-          id: 'ph1',
-          name: 'Foundations',
-          owner: 'emp-2',
-          period: '',
-          budget: '450000.00',
-          deliverables: [{ id: 'dl1', title: 'Excavation sign-off', due: '', done: false }],
-        },
-      ],
-      schedule: [
-        { id: 'p1', name: 'Advance', pct: '30', due: '' },
-        { id: 'p2', name: 'On delivery', pct: '60', due: '' },
-      ],
-      approval: 'approved',
-      approvalNote: '',
-      checks: ['Within budget'],
-      specs: ['Grade 60 steel'],
-      quotes: [],
-    },
-    onSubmit: async () => {
-      await toast.promise(new Promise((r) => setTimeout(r, 800)), {
-        loading: 'Saving request…',
-        success: 'Request saved',
-        error: 'Couldn’t save the request',
-      })
-      setSaved(true)
-      setTimeout(() => setSaved(false), 1500)
-    },
+  const form = useForm<FormValues>({
+    defaultValues,
+    mode: 'onBlur',
+    resolver: recordFormResolver({
+      sections,
+      schema,
+      roles,
+      locale: lang,
+      messages: lang === 'fr' ? fr : undefined,
+    }),
   })
+  const changes = useFormChanges(form, sections, { roles, locale: lang })
+
+  const save = async (values: FormValues) => {
+    await toast.promise(new Promise((r) => setTimeout(r, 800)), {
+      loading: 'Saving request…',
+      success: 'Request saved',
+      error: 'Couldn’t save the request',
+    })
+    form.reset(values)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1500)
+  }
 
   return (
     <div className="flex w-full max-w-4xl flex-col gap-4">
@@ -628,21 +633,33 @@ export default function Demo() {
       </div>
       <RecordForm
         key={layout + mode}
+        form={form}
+        sections={sections}
+        onSubmit={save}
         layout={layout}
         mode={mode}
         sectionColumns={layout === 'cards' ? 2 : 1}
         currency="ETB "
         submitLabel="Send for approval"
-        {...form.formProps}
+        roles={roles}
+        locale={lang}
+        messages={lang === 'fr' ? fr : undefined}
+        upload={fakeUpload}
+        draftKey="demo-purchase-request"
+        autosave={autosave}
       />
-      <ChangeList changes={form.changes} />
+      <ChangeList changes={changes} />
       <Toaster />
       {layout !== 'steps' && (
         <div className="flex justify-end gap-2">
-          <Button disabled={!form.dirty} onClick={() => form.reset()}>
+          <Button disabled={!form.formState.isDirty} onClick={() => form.reset()}>
             Discard
           </Button>
-          <Button variant="primary" loading={form.submitting} onClick={() => void form.submit()}>
+          <Button
+            variant="primary"
+            loading={form.formState.isSubmitting}
+            onClick={form.handleSubmit(save)}
+          >
             {saved ? 'Saved ✓' : 'Save request'}
           </Button>
         </div>

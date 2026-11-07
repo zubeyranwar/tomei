@@ -1,0 +1,30 @@
+---
+title: Getting started
+description: Every item is a shadcn registry item. You need a React project with Tailwind CSS v4 and `shadcn init` already run.
+order: 1
+---
+
+## Install by URL
+
+Works anywhere, no setup. Copy the command from any item page.
+
+```bash
+npx shadcn@latest add https://tomei.zubeyr.dev/ui/r/button.json
+```
+
+## Install by namespace
+
+Add the registry to your `components.json`, then run `npx shadcn@latest add @tomei/<name>`.
+
+```json
+{
+  "registries": {
+    "@tomei": "https://tomei.zubeyr.dev/ui/r/{name}.json"
+  }
+}
+```
+
+## Copy the prompt
+
+Not using shadcn? Each item has a **Copy prompt** button that hands your AI assistant the full
+source and setup steps.

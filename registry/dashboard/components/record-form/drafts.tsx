@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AlertCircle, Check, FileClock, Loader2 } from 'lucide-react'
+import { useFormState, useWatch, type UseFormReturn } from 'react-hook-form'
 
 import { cn } from '@/lib/utils'
 
@@ -59,6 +60,84 @@ export function useLeaveWarning(active: boolean, message?: string) {
     window.addEventListener('beforeunload', onBeforeUnload)
     return () => window.removeEventListener('beforeunload', onBeforeUnload)
   }, [active, text])
+}
+
+export function useDraft(form: UseFormReturn<FormValues>, key?: string): DraftState | null {
+  const values = useWatch({ control: form.control }) as FormValues
+  const { isDirty } = useFormState({ control: form.control })
+  const [found, setFound] = useState<{ values: FormValues; savedAt: Date } | null>(null)
+
+  useEffect(() => {
+    if (!key) return
+    const draft = readDraft(key)
+    if (draft && JSON.stringify(draft.values) !== JSON.stringify(form.getValues()))
+      queueMicrotask(() => setFound(draft))
+  }, [key, form])
+
+  useEffect(() => {
+    if (!key || found) return
+    if (!isDirty) return clearDraft(key)
+    const timer = setTimeout(() => writeDraft(key, values), 600)
+    return () => clearTimeout(timer)
+  }, [key, found, isDirty, values])
+
+  if (!key || !found) return null
+  return {
+    savedAt: found.savedAt,
+    restore: () => {
+      form.reset(found.values, { keepDefaultValues: true })
+      setFound(null)
+    },
+    discard: () => {
+      clearDraft(key)
+      setFound(null)
+    },
+  }
+}
+
+export type AutosaveOptions = { save: (values: FormValues) => Promise<void>; delay?: number }
+
+export function useAutosave(
+  form: UseFormReturn<FormValues>,
+  options?: AutosaveOptions,
+): AutosaveState | undefined {
+  const values = useWatch({ control: form.control })
+  const { isDirty } = useFormState({ control: form.control })
+  const [state, setState] = useState<Omit<AutosaveState, 'retry'>>({ status: 'idle' })
+  const latest = useRef(options)
+  useEffect(() => {
+    latest.current = options
+  })
+
+  const saveNow = useCallback(async () => {
+    const save = latest.current?.save
+    if (!save) return
+    const snapshot = form.getValues()
+    setState((s) => ({ ...s, status: 'saving' }))
+    try {
+      await save(snapshot)
+      form.reset(snapshot, {
+        keepValues: true,
+        keepErrors: true,
+        keepTouched: true,
+        keepIsSubmitted: true,
+      })
+      setState({ status: 'saved', savedAt: new Date() })
+    } catch (error) {
+      setState({ status: 'error', error: error instanceof Error ? error.message : undefined })
+    }
+  }, [form])
+
+  const enabled = !!options
+  const delay = options?.delay ?? 1500
+  useEffect(() => {
+    if (!enabled || !isDirty) return
+    queueMicrotask(() => setState((s) => (s.status === 'saving' ? s : { ...s, status: 'pending' })))
+    const timer = setTimeout(() => void saveNow(), delay)
+    return () => clearTimeout(timer)
+  }, [enabled, isDirty, values, delay, saveNow])
+
+  return enabled ? { ...state, retry: () => void saveNow() } : undefined
 }
 
 export function DraftBanner({ draft, className }: { draft: DraftState; className?: string }) {

@@ -1,0 +1,95 @@
+---
+title: Writing docs
+description: Docs pages and item notes are MDX, so you can mix Markdown with live site components.
+order: 2
+---
+
+## Where docs live
+
+| File                                         | Shows up at                          |
+| -------------------------------------------- | ------------------------------------ |
+| `content/docs/<slug>.mdx`                    | `/docs/<slug>` and the docs sidebar  |
+| `content/docs/index.mdx`                     | `/docs`                              |
+| `registry/<scenario>/<kind>/<name>/docs.mdx` | The **Docs** section of an item page |
+
+A new file in `content/docs` is picked up on the next build. A new `docs.mdx` in an item folder
+needs `pnpm registry:index` (or a dev restart). `docs.mdx` is never shipped to people who install
+the item.
+
+## Frontmatter
+
+Pages in `content/docs` start with frontmatter. `order` sorts the sidebar.
+
+```mdx
+---
+title: Theming
+description: How shadcn tokens map onto Tomei items.
+order: 3
+---
+```
+
+Item `docs.mdx` files skip frontmatter: the title and description come from `item.ts`.
+
+## Components
+
+These work in every MDX file without an import.
+
+### Preview
+
+A live, theme-switchable preview of any item.
+
+```mdx
+<Preview name="button" />
+```
+
+### Install
+
+The install command with the package-manager and URL/namespace tabs.
+
+```mdx
+<Install name="button" />
+```
+
+<Install name="button" />
+
+### Callout
+
+`type` is `note` (default), `tip` or `warn`.
+
+```mdx
+<Callout type="tip" title="Heads up">
+  Wrap the form in `<form onSubmit={form.handleSubmit(save)}>` to submit on Enter.
+</Callout>
+```
+
+<Callout type="tip" title="Heads up">
+  Wrap the form in `<form onSubmit={form.handleSubmit(save)}>` to submit on Enter.
+</Callout>
+
+### Steps
+
+```mdx
+<Steps>
+  <Step title="Install">Run the shadcn command.</Step>
+  <Step title="Render">Import the component and use it.</Step>
+</Steps>
+```
+
+<Steps>
+  <Step title="Install">Run the shadcn command.</Step>
+  <Step title="Render">Import the component and use it.</Step>
+</Steps>
+
+## Code blocks
+
+Fenced code is highlighted with Shiki and gets a copy button. Use the language as the fence tag:
+`tsx`, `ts`, `bash`, `json`, `css`, `mdx`.
+
+## Headings
+
+`##` and `###` headings get anchors and appear in the "On this page" list.
+
+## Adding a component
+
+Write it in `components/site/mdx/`, then register it in `mdx-components.tsx`. Keep these site-only:
+they can use site tokens, unlike registry items.

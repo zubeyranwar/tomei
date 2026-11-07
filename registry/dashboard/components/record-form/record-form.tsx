@@ -1,6 +1,13 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import {
+  Controller,
+  useFormState,
+  useWatch,
+  type SubmitHandler,
+  type UseFormReturn,
+} from 'react-hook-form'
 
 import { cn } from '@/lib/utils'
 import { Field } from '@/registry/dashboard/components/input/input'
@@ -11,19 +18,26 @@ import {
   useResolvedConfig,
   type RecordFormSettings,
 } from './context'
-import { DraftBanner, SaveStatus, type AutosaveState, type DraftState } from './drafts'
-import { FieldControl, type FieldTypeRenderer } from './field-control'
 import {
+  DraftBanner,
+  SaveStatus,
+  useAutosave,
+  useDraft,
+  useLeaveWarning,
+  type AutosaveOptions,
+} from './drafts'
+import { FieldControl, type FieldTypeRenderer } from './field-control'
+import { flattenErrors } from './resolver'
+import {
+  applyComputed,
   formatValue,
   isEmptyValue,
   isReadOnly,
   isRequired,
   isVisible,
   canEdit,
-  validateFields,
   type FieldDef,
   type FieldValue,
-  type FormErrors,
   type FormSection,
   type FormValues,
 } from './schema'
@@ -63,30 +77,27 @@ export type {
   Rule,
 } from './schema'
 export { FieldControl } from './field-control'
-export { ChangeList } from './changes'
-export { FORM_ERROR, issuesToErrors, standardSchema } from './standard-schema'
-export type { Resolver, StandardSchema } from './standard-schema'
-export { useRecordForm } from './use-record-form'
+export { ChangeList, useFormChanges } from './changes'
+export { FORM_ERROR, flattenErrors, recordFormResolver } from './resolver'
+export type { RecordFormResolverOptions, StandardSchema } from './resolver'
 export { RecordFormProvider, useFormConfig } from './context'
 export type { RecordFormSettings } from './context'
 export { createT, en } from './i18n'
 export type { Messages, Translate } from './i18n'
-export { useNativeDropzone, xhrUploader } from './upload'
-export type { DropzoneHook, Uploader, UploadContext, UploadResult } from './upload'
-export { DraftBanner, SaveStatus, useLeaveWarning } from './drafts'
+export { xhrUploader } from './upload'
+export type { Uploader, UploadContext, UploadResult } from './upload'
+export { DraftBanner, SaveStatus, useAutosave, useDraft, useLeaveWarning } from './drafts'
+export type { AutosaveOptions, AutosaveState, DraftState } from './drafts'
 export { canEdit, canView } from './schema'
 export type { Permissions } from './schema'
-export type { ValidateOn } from './use-record-form'
 export type { FieldRenderProps, FieldTypeRenderer } from './field-control'
 
 export type FormLayout = 'accordion' | 'tabs' | 'cards' | 'steps'
 
 type RecordFormProps = {
+  form: UseFormReturn<FormValues>
   sections: FormSection[]
-  values: FormValues
-  onChange: (name: string, value: FieldValue) => void
-  onBlurField?: (name: string) => void
-  errors?: FormErrors
+  onSubmit?: SubmitHandler<FormValues>
   layout?: FormLayout
   mode?: 'edit' | 'view'
   readOnly?: boolean
@@ -96,15 +107,12 @@ type RecordFormProps = {
   currency?: string
   review?: boolean
   submitLabel?: string
-  submitting?: boolean
-  onSubmit?: () => void
-  validateStep?: (names: string[]) => boolean | Promise<boolean>
-  draft?: DraftState | null
-  autosave?: AutosaveState
+  draftKey?: string
+  autosave?: AutosaveOptions
+  warnOnLeave?: boolean
   className?: string
 } & RecordFormSettings
 
-const NO_ERRORS: FormErrors = {}
 const NO_TYPES: Record<string, FieldTypeRenderer> = {}
 
 const gridCols = {
@@ -130,11 +138,9 @@ const button =
 const touches = (key: string, name: string) => key === name || key.startsWith(`${name}.`)
 
 export function RecordForm({
+  form,
   sections,
-  values,
-  onChange,
-  onBlurField,
-  errors: outerErrors = NO_ERRORS,
+  onSubmit,
   layout = 'accordion',
   mode = 'edit',
   readOnly = false,
@@ -144,22 +150,19 @@ export function RecordForm({
   currency = '$',
   review = true,
   submitLabel,
-  submitting = false,
-  onSubmit,
-  validateStep,
-  draft,
-  autosave,
+  draftKey,
+  autosave: autosaveOptions,
+  warnOnLeave = true,
   className,
   locale: localeProp,
   messages,
   translate,
   roles: rolesProp,
   upload,
-  dropzone,
 }: RecordFormProps) {
   const parent = useFormConfig()
   const config = useResolvedConfig(
-    { locale: localeProp, messages, translate, roles: rolesProp, upload, dropzone },
+    { locale: localeProp, messages, translate, roles: rolesProp, upload },
     parent,
   )
   const { t, roles, locale } = config
@@ -170,14 +173,28 @@ export function RecordForm({
   const [tab, setTab] = useState(sections[0]?.id)
   const [step, setStep] = useState(0)
   const [reached, setReached] = useState(0)
-  const [localErrors, setLocalErrors] = useState<FormErrors>({})
   const [checking, setChecking] = useState(false)
   const [editing, setEditing] = useState<{ name: string; before: FieldValue | undefined } | null>(
     null,
   )
-  const [seenErrors, setSeenErrors] = useState(outerErrors)
+  const values = useWatch({ control: form.control }) as FormValues
+  const formState = useFormState({ control: form.control })
+  const errors = flattenErrors(formState.errors)
+  const errorKey = Object.keys(errors).join('|')
+  const [seenErrors, setSeenErrors] = useState(errorKey)
   const focusedFor = useRef<string | null>(null)
-  const errors = { ...localErrors, ...outerErrors }
+  const draft = useDraft(form, draftKey)
+  const autosave = useAutosave(form, autosaveOptions)
+  const uploading = Object.values(values).some(
+    (v) =>
+      Array.isArray(v) &&
+      v.some(
+        (item) =>
+          item && typeof item === 'object' && 'status' in item && item.status === 'uploading',
+      ),
+  )
+  useLeaveWarning(warnOnLeave && (formState.isDirty || uploading))
+  const submit = () => (onSubmit ? form.handleSubmit(onSubmit)() : Promise.resolve())
   const q = query.trim().toLowerCase()
 
   const shownSections = sections
@@ -190,12 +207,10 @@ export function RecordForm({
     }))
     .filter((s) => s.fields.length)
 
-  if (seenErrors !== outerErrors) {
-    setSeenErrors(outerErrors)
+  if (seenErrors !== errorKey) {
+    setSeenErrors(errorKey)
     const failing = shownSections.filter((s) =>
-      s.fields.some((f) =>
-        Object.keys(outerErrors).some((k) => outerErrors[k] && touches(k, f.name)),
-      ),
+      s.fields.some((f) => Object.keys(errors).some((k) => touches(k, f.name))),
     )
     if (failing.length) {
       if (layout === 'tabs' && !failing.some((s) => s.id === tab)) setTab(failing[0].id)
@@ -227,14 +242,11 @@ export function RecordForm({
     }
   }
 
-  const change = (name: string, value: FieldValue) => {
-    const stale = Object.keys(localErrors).filter((k) => touches(k, name))
-    if (stale.length) {
-      const next = { ...localErrors }
-      for (const k of stale) delete next[k]
-      setLocalErrors(next)
-    }
-    onChange(name, value)
+  const syncComputed = () => {
+    const current = form.getValues()
+    const next = applyComputed(sections, current)
+    for (const [name, value] of Object.entries(next))
+      if (next[name] !== current[name]) form.setValue(name, value, { shouldDirty: true })
   }
 
   const hint = (field: FieldDef) => {
@@ -253,39 +265,41 @@ export function RecordForm({
     )
   }
 
-  const control = (field: FieldDef) => {
-    const id = `field-${field.name}`
-    const invalid = !!errors[field.name]
-    return (
-      <FieldControl
-        id={id}
-        field={field}
-        value={valueOf(field)}
-        values={values}
-        invalid={invalid}
-        disabled={readOnly || isReadOnly(field, values, roles)}
-        describedBy={invalid ? `${id}-error` : field.hint ? `${id}-hint` : undefined}
-        currency={currency}
-        errors={errors}
-        fieldTypes={fieldTypes}
-        onChange={(v) => change(field.name, v)}
-      />
-    )
-  }
-
-  const blurWrap = (field: FieldDef, node: React.ReactNode) =>
-    onBlurField ? (
-      <div
-        className="contents"
-        onBlur={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) onBlurField(field.name)
-        }}
-      >
-        {node}
-      </div>
-    ) : (
-      node
-    )
+  const control = (field: FieldDef) => (
+    <Controller
+      name={field.name}
+      control={form.control}
+      render={({ field: rhf, fieldState }) => {
+        const id = `field-${field.name}`
+        const invalid = fieldState.invalid
+        return (
+          <div
+            className="contents"
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) rhf.onBlur()
+            }}
+          >
+            <FieldControl
+              id={id}
+              field={field}
+              value={field.compute ? valueOf(field) : rhf.value}
+              values={values}
+              invalid={invalid}
+              disabled={readOnly || isReadOnly(field, values, roles)}
+              describedBy={invalid ? `${id}-error` : field.hint ? `${id}-hint` : undefined}
+              currency={currency}
+              errors={errors}
+              fieldTypes={fieldTypes}
+              onChange={(v) => {
+                rhf.onChange(v)
+                syncComputed()
+              }}
+            />
+          </div>
+        )
+      }}
+    />
+  )
 
   const viewField = (field: FieldDef, columns: number) => {
     const locked = readOnly || isReadOnly(field, values, roles)
@@ -298,10 +312,12 @@ export function RecordForm({
     const error = errors[field.name]
 
     const finish = (cancel: boolean) => {
-      if (cancel && editing) onChange(field.name, editing.before as FieldValue)
+      if (cancel && editing) {
+        form.setValue(field.name, editing.before, { shouldDirty: true })
+        syncComputed()
+      }
       focusedFor.current = null
       setEditing(null)
-      if (!cancel) onBlurField?.(field.name)
     }
 
     return (
@@ -429,7 +445,7 @@ export function RecordForm({
                 required={!readOnly && isRequired(field, values)}
                 className={spanClass(field, columns)}
               >
-                {blurWrap(field, control(field))}
+                {control(field)}
               </Field>
             ),
           )}
@@ -581,20 +597,14 @@ export function RecordForm({
       setReached(Math.max(reached, to))
     }
 
-    const check = async (section: FormSection) => {
-      if (validateStep) return validateStep(section.fields.map((f) => f.name))
-      const found = validateFields(section.fields, values, fieldTypes, { t, locale, roles })
-      if (!Object.keys(found).length) return true
-      setLocalErrors((prev) => ({ ...prev, ...found }))
-      return false
-    }
+    const check = (section: FormSection) => form.trigger(section.fields.map((f) => f.name))
 
     const next = async () => {
       setChecking(true)
       const ok = await check(current).finally(() => setChecking(false))
       if (!ok) return
       if (step < last || review) go(step + 1)
-      else onSubmit?.()
+      else await submit()
     }
 
     const submitAll = async () => {
@@ -606,7 +616,7 @@ export function RecordForm({
       } finally {
         setChecking(false)
       }
-      onSubmit?.()
+      await submit()
     }
 
     return (
@@ -708,13 +718,13 @@ export function RecordForm({
           </span>
           <button
             type="button"
-            disabled={submitting || checking}
+            disabled={formState.isSubmitting || checking}
             aria-busy={checking || undefined}
             onClick={() => void (reviewing ? submitAll() : next())}
             className={cn(button, 'bg-primary text-primary-foreground hover:bg-primary/90')}
           >
             {reviewing || (!review && step === last)
-              ? submitting
+              ? formState.isSubmitting
                 ? t('saving')
                 : (submitLabel ?? t('submit'))
               : checking

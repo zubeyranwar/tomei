@@ -8,7 +8,7 @@ import { registryUrl, site } from '../lib/site'
 
 const ROOT = process.cwd()
 const REGISTRY = join(ROOT, 'registry')
-const NOT_SHIPPED = new Set(['item.ts', 'demo.tsx', 'prompt.md'])
+const NOT_SHIPPED = new Set(['item.ts', 'demo.tsx', 'prompt.md', 'docs.mdx'])
 const NAME = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 const dirs = (path: string) =>
@@ -60,6 +60,7 @@ for (const scenario of Object.keys(scenarios) as Scenario[]) {
         dir: rel,
         files,
         hasPrompt: existsSync(join(dir, 'prompt.md')),
+        hasDocs: existsSync(join(dir, 'docs.mdx')),
       })
     }
   }
@@ -111,6 +112,13 @@ export const items: IndexedItem[] = ${JSON.stringify(entries, null, 2)}
 
 export const demos: Record<string, () => Promise<{ default: ComponentType }>> = {
 ${entries.map((e) => `  '${e.name}': () => import('@/${e.dir}/demo'),`).join('\n')}
+}
+
+export const docs: Record<string, () => Promise<{ default: ComponentType }>> = {
+${entries
+  .filter((e) => e.hasDocs)
+  .map((e) => `  '${e.name}': () => import('@/${e.dir}/docs.mdx'),`)
+  .join('\n')}
 }
 `
 

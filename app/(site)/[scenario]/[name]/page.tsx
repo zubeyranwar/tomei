@@ -11,6 +11,7 @@ import { Sidebar } from '@/components/site/docs/sidebar'
 import { ThemedPreview } from '@/components/site/docs/themed-preview'
 import { Toc } from '@/components/site/docs/toc'
 import { InstallCommand } from '@/components/site/install-command'
+import { docs } from '@/registry/__index__'
 import {
   getDemo,
   getItem,
@@ -34,10 +35,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: item?.title, description: item?.description }
 }
 
-const sections = [
+const sectionsFor = (hasDocs: boolean) => [
   { id: 'preview', label: 'Preview' },
   { id: 'installation', label: 'Installation' },
   { id: 'usage', label: 'Usage' },
+  ...(hasDocs ? [{ id: 'docs', label: 'Docs' }] : []),
   { id: 'source', label: 'Source code' },
 ]
 
@@ -50,7 +52,12 @@ export default async function ItemPage({ params }: Props) {
   const item = getItem(name)
   if (!item || item.scenario !== scenario) notFound()
 
-  const [files, demo, prompt] = await Promise.all([getSource(item), getDemo(item), getPrompt(item)])
+  const [files, demo, prompt, Docs] = await Promise.all([
+    getSource(item),
+    getDemo(item),
+    getPrompt(item),
+    docs[item.name]?.().then((m) => m.default),
+  ])
   const { prev, next } = getSiblings(item)
 
   return (
@@ -146,6 +153,13 @@ export default async function ItemPage({ params }: Props) {
           <CodeBlock code={demo} filename="example.tsx" />
         </section>
 
+        {Docs && (
+          <section id="docs" className="flex scroll-mt-28 flex-col gap-5">
+            <h2 className="text-heading-4">Docs</h2>
+            <Docs />
+          </section>
+        )}
+
         <section id="source" className="flex scroll-mt-28 flex-col gap-5">
           <h2 className="text-heading-4">Source code</h2>
           {files.map((file) => (
@@ -178,7 +192,7 @@ export default async function ItemPage({ params }: Props) {
       </article>
 
       <aside className="max-xl:hidden">
-        <Toc sections={sections} />
+        <Toc sections={sectionsFor(!!Docs)} />
       </aside>
     </div>
   )

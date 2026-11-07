@@ -18,8 +18,11 @@ registry/
     item.ts                       metadata (title, description, deps, date...)
     demo.tsx                      preview only, never shipped
     prompt.md                     optional, replaces the generated prompt intro
+    docs.mdx                      optional MDX docs on the item page, never shipped
     <name>.tsx                    shipped, plus any other files in the folder
   __index__.ts                    generated, gitignored
+content/docs/                     site docs pages (MDX, frontmatter: title, description, order)
+mdx-components.tsx                components available in every MDX file
 app/(site)/                       showcase site
 app/preview/[name]/               bare demo render, loaded in iframes
 components/site/                  site-only UI (home/ = home page sections, docs/ = item page)

@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 
 import { Button } from '@/registry/dashboard/components/button/button'
 import {
   RecordForm,
-  useRecordForm,
+  recordFormResolver,
   type FormSection,
+  type FormValues,
 } from '@/registry/dashboard/components/record-form/record-form'
 
 import { Drawer } from './drawer'
@@ -29,17 +31,21 @@ const sections: FormSection[] = [
 
 export default function Demo() {
   const [open, setOpen] = useState(false)
-  const form = useRecordForm({
-    sections,
-    initialValues: {
+  const form = useForm<FormValues>({
+    defaultValues: {
       name: 'Selam Girma',
       email: 'selam@example.com',
       phone: '',
       stage: 'Customer',
       since: '',
     },
-    onSubmit: () => setOpen(false),
+    resolver: recordFormResolver({ sections }),
   })
+  const save = form.handleSubmit((values) => {
+    form.reset(values)
+    setOpen(false)
+  })
+  const name = useWatch({ control: form.control, name: 'name' })
 
   return (
     <>
@@ -47,20 +53,20 @@ export default function Demo() {
       <Drawer
         open={open}
         onOpenChange={setOpen}
-        title={String(form.values.name || 'Contact')}
+        title={String(name || 'Contact')}
         description="Customer · Addis Ababa"
         footer={
           <>
             <Button variant="ghost" onClick={() => setOpen(false)}>
               Close
             </Button>
-            <Button variant="primary" disabled={!form.dirty} onClick={() => void form.submit()}>
+            <Button variant="primary" disabled={!form.formState.isDirty} onClick={save}>
               Save changes
             </Button>
           </>
         }
       >
-        <RecordForm layout="cards" searchable={false} {...form.formProps} />
+        <RecordForm form={form} sections={sections} layout="cards" searchable={false} />
       </Drawer>
     </>
   )

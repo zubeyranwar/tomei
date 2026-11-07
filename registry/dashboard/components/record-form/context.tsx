@@ -3,7 +3,7 @@
 import { createContext, useContext, useMemo } from 'react'
 
 import { createT, defaultT, type Messages, type T, type Translate } from './i18n'
-import type { DropzoneHook, Uploader } from './upload'
+import type { Uploader } from './upload'
 
 export type RecordFormSettings = {
   locale?: string
@@ -11,7 +11,6 @@ export type RecordFormSettings = {
   translate?: Translate
   roles?: string[]
   upload?: Uploader
-  dropzone?: DropzoneHook
 }
 
 export type RecordFormConfig = Omit<RecordFormSettings, 'messages' | 'translate'> & { t: T }
@@ -30,17 +29,16 @@ export function RecordFormProvider({
 }
 
 export function useResolvedConfig(settings: RecordFormSettings, parent?: RecordFormConfig) {
-  const { locale, messages, translate, roles, upload, dropzone } = settings
+  const { locale, messages, translate, roles, upload } = settings
   return useMemo<RecordFormConfig>(() => {
     const base = parent ?? { t: defaultT }
     return {
       locale: locale ?? base.locale,
       roles: roles ?? base.roles,
       upload: upload ?? base.upload,
-      dropzone: dropzone ?? base.dropzone,
       t: messages || translate || locale ? createT({ messages, translate, locale }) : base.t,
     }
-  }, [locale, messages, translate, roles, upload, dropzone, parent])
+  }, [locale, messages, translate, roles, upload, parent])
 }
 
 export const ConfigProvider = Config
