@@ -4,17 +4,32 @@ description: Every item is a shadcn registry item. You need a React project with
 order: 1
 ---
 
-## Install by URL
+## Install with @tomei
 
-Works anywhere, no setup. Copy the command from any item page.
+<Steps>
+  <Step title="Register the namespace">
+    Run this once per project. It adds `@tomei` to the `registries` in your `components.json`.
 
 ```bash
-npx shadcn@latest add https://tomei.zubeyr.dev/ui/r/button.json
+npx shadcn@latest registry add @tomei=https://tomei.zubeyr.dev/ui/r/{name}.json
 ```
 
-## Install by namespace
+  </Step>
+  <Step title="Add items">
 
-Add the registry to your `components.json`, then run `npx shadcn@latest add @tomei/<name>`.
+```bash
+npx shadcn@latest add @tomei/button @tomei/card
+```
+
+  </Step>
+</Steps>
+
+<Callout type="tip" title="Listed in the shadcn directory">
+  Once `@tomei` is in the [shadcn registry directory](https://ui.shadcn.com/docs/directory), you can
+  skip step 1: the CLI finds the namespace and registers it for you on the first `add`.
+</Callout>
+
+Prefer editing the file yourself? This is what step 1 writes:
 
 ```json
 {
@@ -23,3 +38,28 @@ Add the registry to your `components.json`, then run `npx shadcn@latest add @tom
   }
 }
 ```
+
+## Browse from the terminal
+
+Search the registry and read an item before you add it.
+
+```bash
+npx shadcn@latest search @tomei -q date
+npx shadcn@latest view @tomei/date-picker
+```
+
+## Install by URL
+
+Works anywhere, with no setup. Copy the command from any item page.
+
+```bash
+npx shadcn@latest add https://tomei.zubeyr.dev/ui/r/button.json
+```
+
+## What gets installed
+
+- The item's files land in `components/<scenario>/`, or `components/<scenario>/<name>/` when an
+  item has several files.
+- npm dependencies are installed with your package manager.
+- Other Tomei items it builds on come along automatically.
+- Extra CSS variables, like `--shadow-card`, are added to your global CSS.

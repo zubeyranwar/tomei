@@ -12,6 +12,7 @@
     "start": "node .farm/.output/server/index.mjs",
     "registry:index": "tsx scripts/registry-index.ts",
     "registry:build": "pnpm registry:index && node -e \"require('fs').rmSync('public/ui/r',{recursive:true,force:true})\" && shadcn build -o public/ui/r",
+    "registry:validate": "pnpm registry:index && shadcn registry validate ./registry.json",
     "new": "tsx scripts/new-item.ts",
     "lint": "eslint .",
     "typecheck": "pnpm registry:index && tsc --noEmit",

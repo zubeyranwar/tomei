@@ -108,7 +108,15 @@ export default async function ItemPage({ params }: Props) {
         <section id="installation" className="flex scroll-mt-28 flex-col gap-5">
           <h2 className="text-heading-4">Installation</h2>
           <p className="text-muted-foreground">
-            Run the shadcn CLI in a project that already has {code('components.json')}.
+            Run the shadcn CLI in a project that already has {code('components.json')}. Using the{' '}
+            {code(site.namespace)} tab?{' '}
+            <a
+              href="/docs#install-with-tomei"
+              className="text-foreground underline underline-offset-4"
+            >
+              Register the namespace once
+            </a>{' '}
+            first.
           </p>
           <InstallCommand
             url={registryUrl(item.name)}

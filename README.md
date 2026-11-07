@@ -4,10 +4,16 @@ Award-level components, sections and pages for landing pages and dashboards, dis
 [shadcn registry](https://ui.shadcn.com/docs/registry).
 
 ```bash
-pnpm dlx shadcn@latest add https://tomei.zubeyr.dev/ui/r/<name>.json
-# or, with the namespace configured in components.json
+# register the @tomei namespace once, then add items by name
+pnpm dlx shadcn@latest registry add @tomei=https://tomei.zubeyr.dev/ui/r/{name}.json
 pnpm dlx shadcn@latest add @tomei/<name>
+
+# or install by URL, no setup
+pnpm dlx shadcn@latest add https://tomei.zubeyr.dev/ui/r/<name>.json
 ```
+
+Browse with `pnpm dlx shadcn@latest search @tomei`. See the
+[Getting started](https://tomei.zubeyr.dev/docs) docs for more.
 
 ## Development
 

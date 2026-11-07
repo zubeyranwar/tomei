@@ -47,6 +47,7 @@ Scenarios and kinds: `landing` → `components | sections | pages`, `dashboard` 
 | `pnpm new <scenario> <kind> <name>` | Scaffold an item                            |
 | `pnpm registry:index`               | Re-index after adding or renaming an item   |
 | `pnpm registry:build`               | Build `public/ui/r/*.json`                  |
+| `pnpm registry:validate`            | Validate the registry with the shadcn CLI   |
 | `pnpm check`                        | Lint, format check and typecheck            |
 | `pnpm build`                        | Production build                            |
 
@@ -104,7 +105,7 @@ run ESLint and Prettier on staged files.
 
 1. Fork the repo and branch off `main` (`fix/record-form-dates`, `docs/theming`).
 2. Keep the PR focused on one change.
-3. Run `pnpm check` and `pnpm build`. Both must pass.
+3. Run `pnpm check` and `pnpm build`, plus `pnpm registry:validate` if you touched `registry/`. All must pass.
 4. For anything visual, add before and after screenshots in light and dark mode.
 5. Describe what changed and why, and link the issue.
 

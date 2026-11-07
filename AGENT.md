@@ -37,6 +37,7 @@ Kinds: landing → `components | sections | pages`, dashboard → `components | 
 pnpm dev                                   # indexes the registry, then farm dev
 pnpm new <scenario> <kind> <name>          # scaffold an item
 pnpm registry:build                        # registry.json → public/ui/r/*.json
+pnpm registry:validate                     # shadcn registry validate
 pnpm check                                 # lint + format:check + typecheck
 pnpm build
 ```

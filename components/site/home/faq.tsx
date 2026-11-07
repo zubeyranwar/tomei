@@ -11,7 +11,7 @@ const questions = [
   },
   {
     q: 'How do I install an item?',
-    a: `Copy the command from its page, or add the registry to components.json and run \`npx shadcn@latest add ${site.namespace}/<name>\`. Dependencies and other ${site.name} items it needs come with it.`,
+    a: `Register the namespace once with \`npx shadcn@latest registry add ${site.namespace}=${site.url}${site.registryPath}/{name}.json\`, then run \`npx shadcn@latest add ${site.namespace}/<name>\`. Or copy the URL command from any item page. Dependencies and other ${site.name} items it needs come with it.`,
   },
   {
     q: 'Which frameworks does it work with?',
