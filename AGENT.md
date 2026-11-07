@@ -17,7 +17,6 @@ registry/
   <scenario>/<kind>/<name>/
     item.ts                       metadata (title, description, deps, date...)
     demo.tsx                      preview only, never shipped
-    prompt.md                     optional, replaces the generated prompt intro
     docs.mdx                      optional MDX docs on the item page, never shipped
     <name>.tsx                    shipped, plus any other files in the folder
   __index__.ts                    generated, gitignored

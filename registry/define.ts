@@ -26,6 +26,5 @@ export type IndexedItem = ItemMeta & {
   kind: Kind
   dir: string
   files: string[]
-  hasPrompt: boolean
   hasDocs: boolean
 }

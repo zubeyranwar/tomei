@@ -8,7 +8,7 @@ import { registryUrl, site } from '../lib/site'
 
 const ROOT = process.cwd()
 const REGISTRY = join(ROOT, 'registry')
-const NOT_SHIPPED = new Set(['item.ts', 'demo.tsx', 'prompt.md', 'docs.mdx'])
+const NOT_SHIPPED = new Set(['item.ts', 'demo.tsx', 'docs.mdx'])
 const NAME = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 const dirs = (path: string) =>
@@ -59,7 +59,6 @@ for (const scenario of Object.keys(scenarios) as Scenario[]) {
         kind: kind as Kind,
         dir: rel,
         files,
-        hasPrompt: existsSync(join(dir, 'prompt.md')),
         hasDocs: existsSync(join(dir, 'docs.mdx')),
       })
     }

@@ -4,7 +4,6 @@ import { notFound } from '@farm.js/core/navigation'
 
 import { kindTitles, scenarios } from '@/registry/config'
 import { Badge } from '@/components/site/badge'
-import { CopyButton } from '@/components/site/copy-button'
 import { Callout } from '@/components/site/docs/callout'
 import { CodeBlock } from '@/components/site/docs/code-block'
 import { Sidebar } from '@/components/site/docs/sidebar'
@@ -13,15 +12,7 @@ import { Toc } from '@/components/site/docs/toc'
 import { InstallCommand } from '@/components/site/install-command'
 import { mdxComponents } from '@/mdx-components'
 import { docs } from '@/registry/__index__'
-import {
-  getDemo,
-  getItem,
-  getItems,
-  getPrompt,
-  getSiblings,
-  getSource,
-  installDir,
-} from '@/lib/registry'
+import { getDemo, getItem, getItems, getSiblings, getSource, installDir } from '@/lib/registry'
 import { registryUrl, site } from '@/lib/site'
 
 export const dynamic = 'force-static'
@@ -53,10 +44,9 @@ export default async function ItemPage({ params }: Props) {
   const item = getItem(name)
   if (!item || item.scenario !== scenario) notFound()
 
-  const [files, demo, prompt, Docs] = await Promise.all([
+  const [files, demo, Docs] = await Promise.all([
     getSource(item),
     getDemo(item),
-    getPrompt(item),
     docs[item.name]?.().then((m) => m.default),
   ])
   const { prev, next } = getSiblings(item)
@@ -102,20 +92,13 @@ export default async function ItemPage({ params }: Props) {
           </div>
           <h1 className="text-heading-2 leading-none font-medium">{item.title}</h1>
           <p className="max-w-2xl text-xl text-muted-foreground">{item.description}</p>
-          <div className="flex gap-2">
-            <a
-              href={`/preview/${item.name}`}
-              target="_blank"
-              className="rounded-lg bg-primary px-3 py-2 text-sm text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Live demo ↗
-            </a>
-            <CopyButton
-              value={prompt}
-              label="Copy prompt"
-              className="rounded-lg px-3 py-2 font-sans text-sm tracking-normal normal-case"
-            />
-          </div>
+          <a
+            href={`/preview/${item.name}`}
+            target="_blank"
+            className="w-fit rounded-lg bg-primary px-3 py-2 text-sm text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            Live demo ↗
+          </a>
         </header>
 
         <section id="preview" className="scroll-mt-28">

@@ -8,10 +8,6 @@ const steps = [
     body: 'Every item is a shadcn registry item. Run the command and the files, dependencies and imports land in your project.',
   },
   {
-    title: 'Or copy the prompt',
-    body: 'Not on shadcn? Hand your AI assistant the prompt: full source, dependencies and setup in one paste.',
-  },
-  {
     title: 'Own the code',
     body: 'No package to update, no black box. It is your file now, so bend it until it fits the brand.',
   },

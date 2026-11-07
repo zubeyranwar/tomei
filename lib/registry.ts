@@ -4,7 +4,6 @@ import { join, relative } from 'node:path'
 import { items } from '@/registry/__index__'
 import type { Scenario } from '@/registry/config'
 import type { IndexedItem } from '@/registry/define'
-import { registryUrl } from '@/lib/site'
 
 const listed = items.filter((i) => !i.hidden)
 
@@ -36,21 +35,4 @@ export function getSiblings(item: IndexedItem) {
   const list = getItems(item.scenario)
   const i = list.findIndex((x) => x.name === item.name)
   return { prev: list[i - 1], next: list[i + 1] }
-}
-
-export async function getPrompt(item: IndexedItem) {
-  const intro = item.hasPrompt
-    ? (await read(`${item.dir}/prompt.md`)).trim()
-    : `Add the "${item.title}" ${item.kind.replace(/s$/, '')} to my React + Tailwind CSS v4 project. ${item.description}`
-
-  const files = await getSource(item)
-  const deps = item.dependencies?.length ? `\n\nInstall: ${item.dependencies.join(' ')}` : ''
-
-  return [
-    intro,
-    `\n\nThe fastest way is the shadcn CLI:\nnpx shadcn@latest add ${registryUrl(item.name)}`,
-    deps,
-    '\n\nOtherwise create these files:',
-    ...files.map((f) => `\n\n${f.path}\n\`\`\`tsx\n${f.code.trim()}\n\`\`\``),
-  ].join('')
 }

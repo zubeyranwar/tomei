@@ -29,7 +29,6 @@ registry/<scenario>/<kind>/<name>/
   item.ts        metadata: title, description, dependencies, date
   demo.tsx       the preview, never shipped
   docs.mdx       optional docs shown on the item page, never shipped
-  prompt.md      optional, replaces the generated "Copy prompt" intro
   <name>.tsx     shipped code, plus any other files in the folder
 content/docs/    site docs pages (MDX)
 app/             the Farm.js site (App Router-style routes)

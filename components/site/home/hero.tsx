@@ -2,7 +2,7 @@ import { Link } from '@farm.js/core/client'
 
 import { MagneticButton } from '@/registry/landing/components/magnetic-button/magnetic-button'
 
-const ticker = ['Free & open source', 'shadcn registry', 'Copy the prompt', 'New every week']
+const ticker = ['Free & open source', 'shadcn registry', 'Own the code', 'New every week']
 
 export function Hero() {
   return (
