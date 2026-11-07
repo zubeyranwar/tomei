@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata } from '@farm.js/core'
 
 import { site } from '@/lib/site'
 

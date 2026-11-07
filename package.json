@@ -7,9 +7,9 @@
     "node": ">=20.9"
   },
   "scripts": {
-    "dev": "pnpm registry:index && next dev",
-    "build": "pnpm registry:build && next build",
-    "start": "next start",
+    "dev": "pnpm registry:index && farm dev",
+    "build": "pnpm registry:build && farm build",
+    "start": "node .farm/.output/server/index.mjs",
     "registry:index": "tsx scripts/registry-index.ts",
     "registry:build": "pnpm registry:index && node -e \"require('fs').rmSync('public/ui/r',{recursive:true,force:true})\" && shadcn build -o public/ui/r",
     "new": "tsx scripts/new-item.ts",
@@ -21,14 +21,13 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@mdx-js/loader": "^3.1.1",
+    "@farm.js/core": "0.1.61",
     "@mdx-js/react": "^3.1.1",
-    "@next/mdx": "16.4.3",
+    "@mdx-js/rollup": "^3.1.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.23",
     "lucide-react": "^1.63.0",
     "motion": "^14.7.1",
-    "next": "^16.4.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-dropzone": "^20.1.4",
@@ -44,13 +43,15 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
-    "@tailwindcss/postcss": "^4.3.3",
+    "@eslint/js": "^10.0.1",
+    "@farm.js/cli": "0.1.61",
+    "@tailwindcss/vite": "^4.3.5",
     "@types/mdx": "^2.0.14",
     "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "eslint": "^9.39.5",
-    "eslint-config-next": "^16.4.3",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "prettier": "^3.9.10",
@@ -58,6 +59,7 @@
     "shadcn": "^4.23.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1"
   }
 }

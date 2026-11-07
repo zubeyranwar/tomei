@@ -336,7 +336,6 @@ export function SignatureField({
   if (disabled) {
     return value ? (
       <div className="overflow-hidden rounded-lg border bg-white">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           id={id}
           src={value}

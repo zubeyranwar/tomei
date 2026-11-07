@@ -7,7 +7,7 @@ export type Heading = { id: string; label: string; depth: 2 | 3 }
 
 export type DocPage = { slug: string; title: string; description?: string; order: number }
 
-const DIR = join(/* turbopackIgnore: true */ process.cwd(), 'content/docs')
+const DIR = join(process.cwd(), 'content/docs')
 
 function frontmatter(source: string) {
   const block = source.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? ''

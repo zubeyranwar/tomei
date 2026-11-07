@@ -1,7 +1,7 @@
 # AGENT.md
 
 Tomei is a shadcn-compatible registry of award-level UI, split into **scenarios** (`landing`,
-`dashboard`). One Next.js app: the site and the registry source live together.
+`dashboard`). One Farm.js app: the site and the registry source live together.
 
 ## Ownership
 
@@ -35,7 +35,7 @@ Kinds: landing → `components | sections | pages`, dashboard → `components | 
 ## Commands
 
 ```bash
-pnpm dev                                   # indexes the registry, then next dev
+pnpm dev                                   # indexes the registry, then farm dev
 pnpm new <scenario> <kind> <name>          # scaffold an item
 pnpm registry:build                        # registry.json → public/ui/r/*.json
 pnpm check                                 # lint + format:check + typecheck
@@ -43,6 +43,19 @@ pnpm build
 ```
 
 Re-run `pnpm registry:index` (or restart dev) after adding or renaming an item.
+
+## Farm.js notes
+
+- `farm.config.ts` sets `srcDir: '.'`, so `app/` stays at the root and `@/` is the repo root.
+  Registry paths depend on that; don't move code under `src/`.
+- Import `Link` from `@farm.js/core/client` and `notFound` from `@farm.js/core/navigation`.
+  `farm-env.d.ts` declares the few `@farm.js/core` types the published package doesn't ship.
+- Static routes export `dynamic = 'force-static'` plus `generateStaticParams`. Params are plain
+  objects; an optional catch-all `[[...slug]]` is one `/`-joined string (`''` at the root).
+- A client component only hydrates if a page imports it statically. Demos load through
+  `components/site/demo.tsx`, which lazy-loads them by name.
+- MDX outside `app/` compiles through `@mdx-js/rollup` (configured in `farm.config.ts`); pass
+  `components={mdxComponents}` when rendering it.
 
 ## Registry item rules
 

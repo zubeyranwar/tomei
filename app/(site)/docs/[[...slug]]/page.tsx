@@ -1,19 +1,20 @@
-import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import type { Metadata } from '@farm.js/core'
+import { notFound } from '@farm.js/core/navigation'
 
 import { Sidebar } from '@/components/site/docs/sidebar'
 import { Toc } from '@/components/site/docs/toc'
+import { mdxComponents } from '@/mdx-components'
 import { docHref, getDocs, getDocSource, getHeadings } from '@/lib/docs'
 
-export const dynamicParams = false
+export const dynamic = 'force-static'
 
 export const generateStaticParams = () =>
   getDocs().map(({ slug }) => ({ slug: slug === 'index' ? [] : [slug] }))
 
-type Props = { params: Promise<{ slug?: string[] }> }
+type Props = { params: { slug?: string } }
 
 const findDoc = async ({ params }: Props) => {
-  const slug = (await params).slug?.join('/') ?? 'index'
+  const slug = (await params).slug || 'index'
   return getDocs().find((d) => d.slug === slug)
 }
 
@@ -26,7 +27,7 @@ export default async function DocPage(props: Props) {
   const doc = await findDoc(props)
   if (!doc) notFound()
 
-  const { default: Content } = await import(`@/content/docs/${doc.slug}.mdx`)
+  const { default: Content } = await import(`../../../../content/docs/${doc.slug}.mdx`)
   const headings = getHeadings(getDocSource(doc.slug))
 
   return (
@@ -42,7 +43,7 @@ export default async function DocPage(props: Props) {
             <p className="max-w-2xl text-xl text-muted-foreground">{doc.description}</p>
           )}
         </header>
-        <Content />
+        <Content components={mdxComponents} />
       </article>
 
       <aside className="max-xl:hidden">

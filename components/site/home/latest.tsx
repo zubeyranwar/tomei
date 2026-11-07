@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@farm.js/core/client'
 
 import { ItemList } from '@/components/site/item-card'
 import { getItems } from '@/lib/registry'

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@farm.js/core/client'
 
 import { kindTitles, scenarios, type Scenario } from '@/registry/config'
 import { docHref, getDocs } from '@/lib/docs'

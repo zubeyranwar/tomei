@@ -9,7 +9,7 @@ import { Step, Steps } from '@/components/site/mdx/steps'
 
 const shells = new Set(['bash', 'sh', 'shell', 'zsh'])
 
-const components: MDXComponents = {
+export const mdxComponents: MDXComponents = {
   h2: ({ children }) => (
     <Heading as="h2" className="mt-6 text-heading-4">
       {children}
@@ -60,8 +60,4 @@ const components: MDXComponents = {
   Preview,
   Step,
   Steps,
-}
-
-export function useMDXComponents(): MDXComponents {
-  return components
 }

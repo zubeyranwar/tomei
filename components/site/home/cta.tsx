@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@farm.js/core/client'
 
 import { MagneticButton } from '@/registry/landing/components/magnetic-button/magnetic-button'
 import { CopyButton } from '@/components/site/copy-button'

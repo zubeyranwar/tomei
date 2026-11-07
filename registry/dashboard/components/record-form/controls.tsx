@@ -55,7 +55,6 @@ export function Avatar({ option, size = 'sm' }: { option: OptionObject; size?: '
     size === 'sm' ? 'size-6 text-[10px]' : 'size-4 text-[8px]',
   )
   if (option.avatar && /^(https?:|\/|data:)/.test(option.avatar)) {
-    // eslint-disable-next-line @next/next/no-img-element
     return <img src={option.avatar} alt="" className={cls} />
   }
   if (!option.avatar) {

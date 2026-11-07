@@ -18,9 +18,7 @@ const fallback: Contributor[] = [
 
 export async function getContributors(): Promise<Contributor[]> {
   try {
-    const res = await fetch(`https://api.github.com/repos/${site.repo}/contributors?per_page=48`, {
-      next: { revalidate: 86_400 },
-    })
+    const res = await fetch(`https://api.github.com/repos/${site.repo}/contributors?per_page=48`)
     if (!res.ok) return fallback
     const data: Contributor[] = await res.json()
     return data.length ? data : fallback

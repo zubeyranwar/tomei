@@ -8,6 +8,8 @@ import { Scenarios } from '@/components/site/home/scenarios'
 import { Statement } from '@/components/site/home/statement'
 import { getItems } from '@/lib/registry'
 
+export const revalidate = 86_400
+
 export default function HomePage() {
   return (
     <>

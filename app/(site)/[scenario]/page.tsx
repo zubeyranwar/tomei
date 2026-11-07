@@ -1,15 +1,15 @@
-import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import type { Metadata } from '@farm.js/core'
+import { notFound } from '@farm.js/core/navigation'
 
 import { kindTitles, scenarios, type Scenario } from '@/registry/config'
 import { ItemList } from '@/components/site/item-card'
 import { getItems } from '@/lib/registry'
 
-export const dynamicParams = false
+export const dynamic = 'force-static'
 
 export const generateStaticParams = () => Object.keys(scenarios).map((scenario) => ({ scenario }))
 
-type Props = { params: Promise<{ scenario: string }> }
+type Props = { params: { scenario: string } }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { scenario } = await params

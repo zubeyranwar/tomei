@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound } from '@farm.js/core/navigation'
 
 import { ThemedPreview } from '@/components/site/docs/themed-preview'
 import { InstallCommand } from '@/components/site/install-command'

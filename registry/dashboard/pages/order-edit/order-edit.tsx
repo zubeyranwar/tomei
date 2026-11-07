@@ -118,15 +118,16 @@ export function OrderEdit({
     () =>
       form.subscribe({
         formState: { values: true },
-        callback: ({ values: next, name }) => {
-          if (name) set((s) => ({ ...s, values: { ...next } }), { merge: name })
+        callback: ({ values: next, name, type }) => {
+          if (name && type === 'change')
+            set((s) => ({ ...s, values: { ...next } }), { merge: name })
         },
       }),
     [form, set],
   )
 
   const setValue = (name: string, value: FormValues[string]) =>
-    form.setValue(name, value, { shouldValidate: form.formState.isSubmitted })
+    set((s) => ({ ...s, values: { ...s.values, [name]: value } }), { merge: name })
 
   const cancel = () => {
     history.reset(saved)

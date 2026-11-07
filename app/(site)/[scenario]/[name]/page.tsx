@@ -1,6 +1,6 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import type { Metadata } from '@farm.js/core'
+import { Link } from '@farm.js/core/client'
+import { notFound } from '@farm.js/core/navigation'
 
 import { kindTitles, scenarios } from '@/registry/config'
 import { Badge } from '@/components/site/badge'
@@ -11,6 +11,7 @@ import { Sidebar } from '@/components/site/docs/sidebar'
 import { ThemedPreview } from '@/components/site/docs/themed-preview'
 import { Toc } from '@/components/site/docs/toc'
 import { InstallCommand } from '@/components/site/install-command'
+import { mdxComponents } from '@/mdx-components'
 import { docs } from '@/registry/__index__'
 import {
   getDemo,
@@ -23,12 +24,12 @@ import {
 } from '@/lib/registry'
 import { registryUrl, site } from '@/lib/site'
 
-export const dynamicParams = false
+export const dynamic = 'force-static'
 
 export const generateStaticParams = () =>
   getItems().map(({ scenario, name }) => ({ scenario, name }))
 
-type Props = { params: Promise<{ scenario: string; name: string }> }
+type Props = { params: { scenario: string; name: string } }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const item = getItem((await params).name)
@@ -75,7 +76,6 @@ export default async function ItemPage({ params }: Props) {
             ← {scenarios[item.scenario].title}
           </Link>
           <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`https://github.com/${site.repo.split('/')[0]}.png?size=64`}
               alt=""
@@ -156,7 +156,7 @@ export default async function ItemPage({ params }: Props) {
         {Docs && (
           <section id="docs" className="flex scroll-mt-28 flex-col gap-5">
             <h2 className="text-heading-4">Docs</h2>
-            <Docs />
+            <Docs components={mdxComponents} />
           </section>
         )}
 

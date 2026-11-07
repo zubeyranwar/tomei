@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@farm.js/core/client'
 
 import { scenarios } from '@/registry/config'
 import { githubUrl, site } from '@/lib/site'

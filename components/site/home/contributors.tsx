@@ -15,7 +15,6 @@ export async function Contributors() {
         {contributors.map((c) => (
           <li key={c.login}>
             <a href={c.html_url} title={c.login} className="group block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={c.avatar_url}
                 alt={c.login}

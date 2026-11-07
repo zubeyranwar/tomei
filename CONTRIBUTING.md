@@ -19,7 +19,7 @@ You need Node 20.9+ and pnpm 10.
 git clone https://github.com/zubeyranwar/tomei.git
 cd tomei
 pnpm install
-pnpm dev            # indexes the registry, then starts Next.js
+pnpm dev            # indexes the registry, then starts Farm.js
 ```
 
 The site uses PP Neue Montreal, which can't be redistributed. Without the font files in
@@ -35,7 +35,7 @@ registry/<scenario>/<kind>/<name>/
   prompt.md      optional, replaces the generated "Copy prompt" intro
   <name>.tsx     shipped code, plus any other files in the folder
 content/docs/    site docs pages (MDX)
-app/             the Next.js site
+app/             the Farm.js site (App Router-style routes)
 components/site/ site-only UI
 scripts/         registry indexer and scaffolder
 ```

@@ -4,10 +4,7 @@ import { combined, coverScale, type Edit, type StageImage } from './edits'
 
 function Art({ image }: { image: StageImage }) {
   if (image.src) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={image.src} alt="" draggable={false} className="size-full object-cover" />
-    )
+    return <img src={image.src} alt="" draggable={false} className="size-full object-cover" />
   }
   return (
     <div className="size-full" style={{ background: image.background }}>

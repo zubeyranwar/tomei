@@ -1,10 +1,10 @@
-import { notFound } from 'next/navigation'
+import { notFound } from '@farm.js/core/navigation'
 
-import { demos } from '@/registry/__index__'
+import { Demo } from '@/components/site/demo'
 import { getItem, getItems } from '@/lib/registry'
 import { cn } from '@/lib/utils'
 
-export const dynamicParams = false
+export const dynamic = 'force-static'
 
 export const generateStaticParams = () => getItems().map(({ name }) => ({ name }))
 
@@ -18,11 +18,10 @@ const themeScript = (scenario: string) => `(() => {
   addEventListener('message', (e) => e.data?.type === 'tomei:theme' && apply(e.data.theme))
 })()`
 
-export default async function PreviewPage({ params }: { params: Promise<{ name: string }> }) {
+export default async function PreviewPage({ params }: { params: { name: string } }) {
   const { name } = await params
   const item = getItem(name)
   if (!item) notFound()
-  const { default: Demo } = await demos[name]()
 
   return (
     <>
@@ -33,7 +32,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ name: 
           item.kind === 'components' && 'grid place-items-center p-8',
         )}
       >
-        <Demo />
+        <Demo name={name} />
       </main>
     </>
   )

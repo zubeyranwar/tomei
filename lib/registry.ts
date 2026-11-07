@@ -13,8 +13,7 @@ export const getItems = (scenario?: Scenario) =>
 
 export const getItem = (name: string) => listed.find((i) => i.name === name)
 
-const read = (path: string) =>
-  readFile(join(/* turbopackIgnore: true */ process.cwd(), path), 'utf8')
+const read = (path: string) => readFile(join(process.cwd(), path), 'utf8')
 
 export const getSource = (item: IndexedItem) =>
   Promise.all(
