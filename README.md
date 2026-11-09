@@ -1,6 +1,6 @@
 # Tomei
 
-Award-level components, sections and pages for landing pages and dashboards, distributed as a
+Components, sections and pages for landing pages and dashboards, distributed as a
 [shadcn registry](https://ui.shadcn.com/docs/registry).
 
 ```bash
